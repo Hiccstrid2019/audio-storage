@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MusicProgress.Data;
+using MusicProgress.Options;
 
 namespace MusicProgress
 {
@@ -38,6 +39,7 @@ namespace MusicProgress
             var severVersion = ServerVersion.AutoDetect(connString);
 
             services.AddDbContext<AppDbContext>(options => options.UseMySql(connString, severVersion));
+            services.Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

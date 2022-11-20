@@ -2,9 +2,9 @@
 
 namespace MusicProgress.Services.Interfaces
 {
-    public interface IUsersInterface
+    public interface IUserService
     {
-        bool CreateUser(string username, string email, string password);
+        string CreateUser(string username, string email, string password);
         User GetById(string id);
     }
 }
