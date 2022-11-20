@@ -52,7 +52,7 @@ public class AuthService : IAuthService
         return true;
     }
 
-    public AuthData GetToken(string id)
+    public AuthData GetToken(int id)
     {
         var expirationTime = DateTime.UtcNow.AddSeconds(_jwtSettings.LifeSpan);
 
@@ -63,7 +63,7 @@ public class AuthService : IAuthService
         {
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.Name, id)
+                new Claim(ClaimTypes.Name, id.ToString())
             }),
             Expires = expirationTime,
             SigningCredentials = signInCred

@@ -6,6 +6,6 @@ namespace MusicProgress.Services.Interfaces
     {
         string HashPassword(string password);
         bool VerifyPassword(string currentPassword, string hashedPassword);
-        AuthData GetToken(string id);
+        AuthData GetToken(int id);
     }
 }
