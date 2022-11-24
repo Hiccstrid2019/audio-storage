@@ -12,14 +12,8 @@ public class UserService : IUserService
     {
         _context = context;
     }
-    public int CreateUser(string username, string email, string hashedPassword)
+    public int CreateUser(User user)
     {
-        var user = new User()
-        {
-            UserName = username,
-            Email = email,
-            HashedPassword = hashedPassword
-        };
         _context.Add(user);
         _context.SaveChanges();
         return user.UserId;
@@ -40,5 +34,15 @@ public class UserService : IUserService
     {
         var user = _context.Users.SingleOrDefault(u => u.Email == email);
         return user == null;
+    }
+
+    public string GetRefreshToken(int userId)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void SaveRefreshToken(int userIf)
+    {
+        throw new System.NotImplementedException();
     }
 }
