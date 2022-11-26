@@ -35,14 +35,4 @@ public class UserService : IUserService
         var user = _context.Users.SingleOrDefault(u => u.Email == email);
         return user == null;
     }
-
-    public string GetRefreshToken(int userId)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void SaveRefreshToken(int userIf)
-    {
-        throw new System.NotImplementedException();
-    }
 }

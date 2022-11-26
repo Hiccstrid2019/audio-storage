@@ -8,7 +8,5 @@ namespace MusicProgress.Services.Interfaces
         User GetById(int id);
         User GetByEmail(string email);
         bool IsEmailUniq(string email);
-        string GetRefreshToken(int userId);
-        void SaveRefreshToken(int userIf);
     }
 }

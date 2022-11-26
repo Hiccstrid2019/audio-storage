@@ -8,8 +8,5 @@ namespace MusicProgress.Data
         public string UserName { get; set; }
         public string Email { get; set; }
         public string HashedPassword { get; set; }
-        public string? RefreshToken { get; set; }
-        public DateTime? TimeCreated { get; set; }
-        public DateTime? TokenExpires { get; set; }
     }
 }
