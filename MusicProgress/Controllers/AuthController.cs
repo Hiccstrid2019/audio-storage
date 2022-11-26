@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using MusicProgress.Data;
 using MusicProgress.Models;
 using MusicProgress.Services.Interfaces;
@@ -11,10 +14,12 @@ namespace MusicProgress.Controllers
     {
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
-        public AuthController(IUserService service, IAuthService authService)
+        private readonly ITokenService _tokenService;
+        public AuthController(IUserService service, IAuthService authService, ITokenService tokenService)
         {
             _userService = service;
             _authService = authService;
+            _tokenService = tokenService;
         }
 
         [HttpPost]
@@ -24,7 +29,29 @@ namespace MusicProgress.Controllers
             if (!emailUniq)
                 return BadRequest(new {email = "email already exists"});
             var hashedPassword = _authService.HashPassword(model.Password);
-            var userId = _userService.CreateUser(model.Username, model.Email, hashedPassword);
+
+            var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+            var user = new User
+            {
+                Email = model.Email,
+                UserName = model.Username,
+                HashedPassword = hashedPassword,
+            };
+            HttpContext.Response.Cookies.Append("refreshToken", token,
+                new CookieOptions()
+                {
+                    HttpOnly = true,
+                    Expires = DateTime.Now.AddDays(7)   
+                });
+            var userId = _userService.CreateUser(user);
+            _tokenService.SetRefreshToken(new RefreshToken()
+            {
+                UserId = userId,
+                Token = token,
+                TimeCreated = DateTime.Now,
+                TokenExpires = DateTime.Now.AddDays(7)
+            });
+
             return _authService.GetToken(userId);
         }
 
@@ -39,6 +66,21 @@ namespace MusicProgress.Controllers
             {
                 return BadRequest(new { password = "invalid password"});
             }
+
+            var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+            HttpContext.Response.Cookies.Append("refreshToken", token,
+                new CookieOptions()
+                {
+                    HttpOnly = true,
+                    Expires = DateTime.Now.AddDays(7)   
+                });
+            _tokenService.SetRefreshToken(new RefreshToken()
+            {
+                UserId = user.UserId,
+                Token = token,
+                TimeCreated = DateTime.Now,
+                TokenExpires = DateTime.Now.AddDays(7)
+            });
 
             return _authService.GetToken(user.UserId);
         }
