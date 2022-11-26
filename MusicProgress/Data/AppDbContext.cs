@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NuGet.Common;
 
 namespace MusicProgress.Data
 {
@@ -7,5 +8,6 @@ namespace MusicProgress.Data
         public AppDbContext(DbContextOptions<AppDbContext> configuration) : base(configuration) {}
 
         public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
     }
 }
