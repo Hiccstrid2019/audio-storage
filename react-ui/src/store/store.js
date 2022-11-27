@@ -5,6 +5,7 @@ import axios from "axios";
 export default class Store {
     user = {}
     isAuth = false;
+    isLoading = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -16,6 +17,10 @@ export default class Store {
 
     setUser(user) {
         this.user = user;
+    }
+
+    setLoading(bool) {
+        this.isLoading = bool;
     }
 
     async login(email, password) {
@@ -43,7 +48,7 @@ export default class Store {
 
     async logout() {
         try {
-            const responses = await AuthService.logout();
+            const response = await AuthService.logout();
             localStorage.removeItem('token');
             this.setAuth(false);
             this.setUser({})
@@ -53,10 +58,17 @@ export default class Store {
     }
 
     async checkAuth() {
+        this.setLoading(true);
         try {
-            const response = await axios.get
+            const response = await axios.get(`https://localhost:5001/api/auth/refresh-token`,{withCredentials: true});
+            console.log(response);
+            localStorage.setItem('token', response.data.token);
+            this.setAuth(true);
+            this.setUser(response.data.user)
         } catch (e) {
-
+            console.log(e.response);
+        } finally {
+            this.setLoading(false);
         }
     }
 }

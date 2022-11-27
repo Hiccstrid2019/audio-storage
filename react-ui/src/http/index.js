@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const BASE_URL = "https://localhost:5001"
+export const API_URL = "https://localhost:5001"
 
 const api = axios.create({
     withCredentials: true,
-    baseURL: BASE_URL
+    baseURL: API_URL
 })
 
 api.interceptors.request.use((config) => {

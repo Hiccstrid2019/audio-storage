@@ -9,7 +9,7 @@ export default class AuthService {
         return api.post("/api/auth/register", {email, username, password})
     }
 
-    static async logout(email, username, password) {
-        return api.post("api/auth/logout")
+    static async logout() {
+        return api.get("api/auth/logout")
     }
 }
