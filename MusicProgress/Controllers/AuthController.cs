@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MusicProgress.Data;
@@ -9,7 +10,7 @@ using MusicProgress.Services.Interfaces;
 namespace MusicProgress.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -22,7 +23,7 @@ namespace MusicProgress.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public ActionResult<AuthData> Register(RegisterModel model)
         {
             var emailUniq = _userService.IsEmailUniq(model.Email);
@@ -55,7 +56,7 @@ namespace MusicProgress.Controllers
             return _authService.GetToken(userId);
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public ActionResult<AuthData> Login(LoginModel model)
         {
             var user = _userService.GetByEmail(model.Email);
@@ -72,7 +73,9 @@ namespace MusicProgress.Controllers
                 new CookieOptions()
                 {
                     HttpOnly = true,
-                    Expires = DateTime.Now.AddDays(7)   
+                    Expires = DateTime.Now.AddDays(7),
+                    SameSite = SameSiteMode.None,
+                    Secure = true
                 });
             _tokenService.SetRefreshToken(new RefreshToken()
             {
@@ -83,6 +86,43 @@ namespace MusicProgress.Controllers
             });
 
             return _authService.GetToken(user.UserId);
+        }
+        
+        [HttpGet("refresh-token")]
+        public ActionResult<AuthData> RefreshToken()
+        {
+            var refreshToken = HttpContext.Request.Cookies["refreshToken"];
+            var userId = _tokenService.GetUserIdByToken(refreshToken);
+            if (userId == null)
+            {
+                return Unauthorized("Invalid Refresh Token");
+            }
+
+            var user = _userService.GetById((int) userId);
+            var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+            HttpContext.Response.Cookies.Append("refreshToken", token,
+                new CookieOptions()
+                {
+                    HttpOnly = true,
+                    Expires = DateTime.Now.AddDays(7)   
+                });
+            _tokenService.SetRefreshToken(new RefreshToken()
+            {
+                UserId = user.UserId,
+                Token = token,
+                TimeCreated = DateTime.Now,
+                TokenExpires = DateTime.Now.AddDays(7)
+            });
+            return _authService.GetToken((int)userId);
+        }
+        
+        [HttpGet("[action]")]
+        public IActionResult LogOut()
+        {
+            var token = HttpContext.Request.Cookies["refreshToken"];
+            _tokenService.RemoveRefreshToken(token);
+            HttpContext.Response.Cookies.Delete("refreshToken");
+            return Ok();
         }
     }
 }
