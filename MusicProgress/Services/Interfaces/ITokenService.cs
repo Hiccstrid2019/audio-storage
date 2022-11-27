@@ -4,6 +4,7 @@ namespace MusicProgress.Services.Interfaces;
 
 public interface ITokenService
 {
-    RefreshToken GetRefreshToken(int userId);
+    int? GetUserIdByToken(string token);
     void SetRefreshToken(RefreshToken token);
+    void RemoveRefreshToken(string token);
 }

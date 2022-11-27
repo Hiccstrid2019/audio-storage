@@ -62,6 +62,7 @@ namespace MusicProgress
                 });
             
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITokenService, TokenService>();
             services.AddSingleton<IAuthService, AuthService>();
         }
 
