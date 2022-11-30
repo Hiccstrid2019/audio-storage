@@ -1,11 +1,14 @@
 import './App.css';
-import {Button, Row} from 'antd';
-import LoginForm from "./components/LoginForm";
 import {useContext, useEffect} from "react";
 import {Context} from "./index";
 import {observer} from "mobx-react-lite";
 import {Route, Routes} from "react-router-dom";
+import Login from "./components/Login";
 import Register from "./components/Register";
+import RequireAuth from "./hoc/RequireAuth";
+import Profile from "./components/Profile";
+import BaseLayout from "./components/BaseLayout";
+import Homepage from "./components/Homepage";
 
 function App() {
     const {store} = useContext(Context);
@@ -18,23 +21,22 @@ function App() {
     if (store.isLoading) {
         return <div>Loading....</div>
     }
-    if (!store.isAuth) {
-        return (
-            <div className="App">
-                <Row justify="center" align="middle" style={{height: "100vh"}}>
-                    <Routes>
-                        <Route path="/login" element={<LoginForm/>}/>
-                        <Route path="/register" element={<Register/>}/>
-                    </Routes>
-                </Row>
-            </div>
-        )
-    }
   return (
-      <div className="App">
-          <h1>You authorized</h1>
-          <Button type="primary" onClick={() => store.logout()}>Logout</Button>
-      </div>
+      <>
+          <Routes>
+              <Route path='/' element={<BaseLayout/>}>
+                  <Route index element={<Homepage/>}/>
+                  <Route path='/login' element={<Login/>}/>
+                  <Route path='/register' element={<Register/>}/>
+                  <Route path='/profile' element={
+                      <RequireAuth>
+                          <Profile/>
+                      </RequireAuth>
+                  }/>
+              </Route>
+
+          </Routes>
+      </>
   );
 }
 
