@@ -23,13 +23,14 @@ export default class Store {
         this.isLoading = bool;
     }
 
-    async login(email, password) {
+    async login(email, password, navigate) {
         try {
             const responses = await AuthService.login(email, password);
             console.log(responses);
             localStorage.setItem('token', responses.data.token);
             this.setAuth(true);
-            this.setUser(responses.data.user)
+            this.setUser(responses.data.user);
+            navigate();
         } catch (e) {
             console.log(e.response?.data);
         }
