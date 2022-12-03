@@ -9,6 +9,8 @@ import RequireAuth from "./hoc/RequireAuth";
 import Profile from "./components/Profile";
 import BaseLayout from "./components/BaseLayout";
 import Homepage from "./components/Homepage";
+import AudioStorage from "./components/AudioStorage";
+import LessonPage from "./components/LessonPage";
 
 function App() {
     const {store} = useContext(Context);
@@ -31,6 +33,16 @@ function App() {
                   <Route path='/profile' element={
                       <RequireAuth>
                           <Profile/>
+                      </RequireAuth>
+                  }/>
+                  <Route path='/audio' element={
+                      <RequireAuth>
+                          <AudioStorage/>
+                      </RequireAuth>
+                  }/>
+                  <Route path='/audio/:id' element={
+                      <RequireAuth>
+                          <LessonPage/>
                       </RequireAuth>
                   }/>
               </Route>

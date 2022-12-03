@@ -8,10 +8,6 @@ const RequireAuth = ({children}) => {
     const location = useLocation();
     const {store} = useContext(Context);
 
-    if (store.isLoading) {
-        return <div>Loading....</div>
-    }
-
     if (!store.isAuth) {
         return <Navigate to='/login' state={{from: location}}/>
     }

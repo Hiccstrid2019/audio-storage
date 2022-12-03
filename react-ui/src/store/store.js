@@ -6,6 +6,21 @@ export default class Store {
     user = {}
     isAuth = false;
     isLoading = false;
+    lessons = [{
+        id: 1,
+        title: "Башня из слоновой кости",
+        audio: [
+            {id: 1, duration: 160},
+            {id: 2, duration: 170},
+        ]
+    }, {
+        id: 2,
+        title: "КИШ - Отражение",
+        audio: [
+            {id: 1, duration: 160},
+            {id: 2, duration: 170},
+        ]
+    }]
 
     constructor() {
         makeAutoObservable(this);
