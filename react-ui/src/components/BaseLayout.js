@@ -14,11 +14,14 @@ const BaseLayout = () => {
     }))
 
     return (
-        <Layout className="layout">
+        <Layout className="layout" style={{height: "100vh"}}>
             <Header>
                 <Menu mode='horizontal' theme='light'>
                     <Menu.Item>
                         <NavLink to='/'>Home</NavLink>
+                    </Menu.Item>
+                    <Menu.Item>
+                        <NavLink to='/audio'>My records</NavLink>
                     </Menu.Item>
                     <Menu.Item>
                         <NavLink to='/profile'>Profile</NavLink>
