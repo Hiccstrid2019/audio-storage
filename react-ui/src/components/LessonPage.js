@@ -2,7 +2,8 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useParams} from "react-router-dom";
 import {Button, Row} from "antd";
 
-const LessonPage = () => {
+const LessonPage = ({store}) => {
+
     const mediaRecorder = useRef(null);
     useEffect(() => {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -40,12 +41,11 @@ const LessonPage = () => {
 
     const stopRecording = (e) => {
         const blob = new Blob(chunks, {type: "audio/ogg; codecs=opus;" });
-        chunks = [];
         setAudio(window.URL.createObjectURL(blob));
+        store.sendAudio(blob);
+        chunks = [];
     }
-    // const startRecording = (e) => {
-    //
-    // }
+
 
     return (
         <Row justify='center' align='middle'>

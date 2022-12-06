@@ -1,6 +1,7 @@
 import {makeAutoObservable} from "mobx";
 import AuthService from "../services/AuthService";
 import axios from "axios";
+import AudioService from "../services/AudioService";
 
 export default class Store {
     user = {}
@@ -85,6 +86,15 @@ export default class Store {
             console.log(e.response);
         } finally {
             this.setLoading(false);
+        }
+    }
+
+    async sendAudio(blob) {
+        try {
+            const response = await AudioService.saveFile(blob);
+            console.log(response);
+        } catch (e) {
+            console.error(e.response);
         }
     }
 }
