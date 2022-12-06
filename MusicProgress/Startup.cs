@@ -19,6 +19,8 @@ using MusicProgress.Data;
 using MusicProgress.Options;
 using MusicProgress.Services;
 using MusicProgress.Services.Interfaces;
+using Volo.Abp.BlobStoring;
+using Volo.Abp.BlobStoring.FileSystem;
 
 namespace MusicProgress
 {
@@ -64,6 +66,17 @@ namespace MusicProgress
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddSingleton<IAuthService, AuthService>();
+
+            services.Configure<AbpBlobStoringOptions>(options =>
+            {
+                options.Containers.ConfigureDefault(container =>
+                {
+                    container.UseFileSystem(fileSystem =>
+                    {
+                        fileSystem.BasePath = "D:\\blob";
+                    });
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
