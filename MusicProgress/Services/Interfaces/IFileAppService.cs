@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
-using MusicProgress.DTO;
+﻿using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using Minio;
 
 namespace MusicProgress.Services.Interfaces;
-using Volo.Abp.Application.Services;
 
-public interface IFileAppService : IApplicationService
+public interface IFileAppService
 {
-    Task SaveBlobAsync(SaveBlobInputDto input);
-    Task<BlobDto> GetBlobAsync(GetBlobRequestDto input);
+    void UploadObject(string name, Stream data);
+    void GetObject(string name);
 }
