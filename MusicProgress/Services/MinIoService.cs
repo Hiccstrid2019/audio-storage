@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Minio;
 using MusicProgress.Services.Interfaces;
@@ -16,8 +18,9 @@ public class MinIoService : IFileAppService
         _config = options.Value;
     }
 
-    public async void UploadObject(string name, Stream data)
+    public async Task UploadObjectAsync(string name, Stream data)
     {
+        data.Seek(0, SeekOrigin.Begin);
         var putObjectArgs = new PutObjectArgs()
             .WithBucket(_config.BucketName)
             .WithObject(name)
@@ -27,11 +30,18 @@ public class MinIoService : IFileAppService
         await _client.PutObjectAsync(putObjectArgs).ConfigureAwait(false);
     }
 
-    public async void GetObject(string name)
+    public async Task<Stream> GetObjectAsync(string name)
     {
-        var args = new GetObjectArgs()
+        using var memoryStream = new MemoryStream();
+        var getObjectArgs = new GetObjectArgs()
             .WithBucket(_config.BucketName)
-            .WithObject(name);
-        var stat = await _client.GetObjectAsync(args);
+            .WithObject(name)
+            .WithCallbackStream((stream) =>
+            {
+                stream.CopyToAsync(memoryStream);
+            });
+        await _client.GetObjectAsync(getObjectArgs);
+
+        return memoryStream;
     }
 }

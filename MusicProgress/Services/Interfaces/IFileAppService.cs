@@ -7,6 +7,6 @@ namespace MusicProgress.Services.Interfaces;
 
 public interface IFileAppService
 {
-    void UploadObject(string name, Stream data);
-    void GetObject(string name);
+    Task UploadObjectAsync(string name, Stream data);
+    Task<Stream> GetObjectAsync(string name);
 }
