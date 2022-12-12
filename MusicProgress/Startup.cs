@@ -15,12 +15,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Minio;
 using MusicProgress.Data;
 using MusicProgress.Options;
 using MusicProgress.Services;
 using MusicProgress.Services.Interfaces;
-using Volo.Abp.BlobStoring;
-using Volo.Abp.BlobStoring.FileSystem;
 
 namespace MusicProgress
 {
@@ -47,6 +46,7 @@ namespace MusicProgress
 
             services.AddDbContext<AppDbContext>(options => options.UseMySql(connString, severVersion));
             services.Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)));
+            services.Configure<MinioConfig>(Configuration.GetSection("MinIOSettings"));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -66,17 +66,14 @@ namespace MusicProgress
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddSingleton<IAuthService, AuthService>();
+            services.AddScoped<IFileAppService, MinIoService>();
+            services.AddScoped<IAudioService, AudioService>();
 
-            services.Configure<AbpBlobStoringOptions>(options =>
-            {
-                options.Containers.ConfigureDefault(container =>
-                {
-                    container.UseFileSystem(fileSystem =>
-                    {
-                        fileSystem.BasePath = "D:\\blob";
-                    });
-                });
-            });
+            var minioConfig = Configuration.GetSection("MinIOSettings");
+            services.AddScoped<MinioClient>(x => new MinioClient()
+                .WithEndpoint(minioConfig["Endpoint"])
+                .WithCredentials(minioConfig["AccessKey"], minioConfig["SecretKey"])
+                .Build());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
