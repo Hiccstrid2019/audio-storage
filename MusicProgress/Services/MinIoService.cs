@@ -44,4 +44,14 @@ public class MinIoService : IFileAppService
 
         return memoryStream;
     }
+
+    public async Task<string> GetUrlObjectAsync(string name)
+    {
+        var getObjectArgs = new PresignedGetObjectArgs()
+            .WithBucket(_config.BucketName)
+            .WithObject(name)
+            .WithExpiry(60 * 60 * 24);
+        var url = await _client.PresignedGetObjectAsync(getObjectArgs);
+        return url;
+    }
 }
