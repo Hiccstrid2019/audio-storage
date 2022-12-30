@@ -1,22 +1,16 @@
 import React, {useContext} from 'react';
-import {PlusCircleOutlined} from "@ant-design/icons";
-import {Button, Row} from "antd";
 import {Context} from "../index";
-import Lesson from "./ui/Lesson";
+import Card from "./ui/Card/Card";
+import classes from "./AudioStorage.module.css";
 
 const AudioStorage = () => {
     const {store} = useContext(Context);
     return (
-        <>
+        <div className={classes.container}>
             {
-                store.lessons.map((lesson) => <Lesson key={lesson.id} lesson={lesson}/>)
+                store.lessons.map((lesson) => <Card key={lesson.id} category={lesson.category} title={lesson.title} id={lesson.id}/>)
             }
-            <Row justify="center" align='middle'>
-                <Button type="primary" shape="round" icon={<PlusCircleOutlined />} size='large' style={{margin: "20px", width: "30%"}}>
-                    Add tracking
-                </Button>
-            </Row>
-        </>
+        </div>
     );
 };
 
