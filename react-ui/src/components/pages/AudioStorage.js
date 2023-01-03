@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
-import {Context} from "../index";
-import Card from "./ui/Card/Card";
+import {Context} from "../../index";
+import Card from "../ui/Card/Card";
 import classes from "./AudioStorage.module.css";
 
 const AudioStorage = () => {

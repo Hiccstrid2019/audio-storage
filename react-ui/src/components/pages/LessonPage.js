@@ -1,9 +1,12 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {useParams} from "react-router-dom";
-import {Button, Row} from "antd";
+import {Context} from "../../index";
+import classes from "./LessonPage.module.css";
+import Audio from "../ui/Audio/Audio";
+import MicIcon from "./mic.svg"
 
-const LessonPage = ({store}) => {
-
+const LessonPage = () => {
+    const {store} = useContext(Context);
     const mediaRecorder = useRef(null);
     useEffect(() => {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -13,7 +16,7 @@ const LessonPage = ({store}) => {
 
     const {id} = useParams();
 
-    let chunks = [];
+    const [chunks, setChunks] = useState([]);
     const [record, setRecord] = useState(false);
     const [audio, setAudio] = useState(null);
 
@@ -27,6 +30,7 @@ const LessonPage = ({store}) => {
                     mediaRecorder.current.onstop = stopRecording;
                     mediaRecorder.current.ondataavailable = (e) => {
                         chunks.push(e.data);
+                        setChunks(chunks => [...chunks, e.data]);
                     };
                 })
                 .catch((err) => {
@@ -43,19 +47,18 @@ const LessonPage = ({store}) => {
         const blob = new Blob(chunks, {type: "audio/ogg; codecs=opus;" });
         setAudio(window.URL.createObjectURL(blob));
         store.sendAudio(blob);
-        chunks = [];
+        setChunks([]);
     }
 
 
     return (
-        <Row justify='center' align='middle'>
-            <Button type='default' size='middle' onClick={handleRecord}>
-                {
-                    !record ? <img src='/mic-fill.svg' alt='mic'/> : <img src='/mic-mute.svg' alt='mic'/>
-                }
-            </Button>
-            <audio src={audio} controls/>
-        </Row>
+        <div className={classes.container}>
+            <div className={classes.title}>{store.lessons.find(lesson => lesson.id === Number(id)).title}</div>
+            {
+                store.lessons.find(lesson => lesson.id === Number(id)).audio.map(audio => <Audio key={audio.id} audioUrl={audio.url}/>)
+            }
+            <img src={MicIcon}/>
+        </div>
     );
 };
 
