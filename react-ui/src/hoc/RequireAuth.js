@@ -4,14 +4,14 @@ import {Context} from "../index";
 import {observer} from "mobx-react-lite";
 
 
-const RequireAuth = ({children}) => {
+const RequireAuth = ({isAuth, children}) => {
     const location = useLocation();
-    const {store} = useContext(Context);
 
-    if (!store.isAuth) {
-        return <Navigate to='/login' state={{from: location}}/>
-    }
-    return children;
+    return (
+        <>
+            {!isAuth ? <><Navigate to='/login' state={{from: location}} replace/></>: children}
+        </>
+    )
 }
 
 export default observer(RequireAuth);
