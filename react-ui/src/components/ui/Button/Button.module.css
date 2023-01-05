@@ -1,0 +1,11 @@
+.btn {
+    margin: 0;
+    padding: 10px;
+    background-color: #ffffff;
+    height: 40px;
+    border-color: #1F2937;
+    border-width: 1px;
+    border-radius: 10px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 16px;
+}
