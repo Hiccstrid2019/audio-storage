@@ -2,6 +2,7 @@ import {makeAutoObservable} from "mobx";
 import AuthService from "../services/AuthService";
 import axios from "axios";
 import AudioService from "../services/AudioService";
+import LessonService from "../services/LessonService";
 
 export default class Store {
     user = {}
@@ -11,26 +12,7 @@ export default class Store {
         id: 1,
         title: "Eminem - Killshot",
         category: "Rap",
-        audio: [
-            {id: 1, url: 'http://127.0.0.1:9000/audio/c209a2e2-37bc-4c69-b32f-5c03c2c8fddf.ogg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=QsrL590FNy6laAmb%2F20230102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230102T204904Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=5f026e96655c0d8fbed5458a3159824ef0b219589c79a9d223538ae857e65b1c'},
-            {id: 2, url: 'http://127.0.0.1:9000/audio/c209a2e2-37bc-4c69-b32f-5c03c2c8fddf.ogg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=QsrL590FNy6laAmb%2F20230102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230102T204904Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=5f026e96655c0d8fbed5458a3159824ef0b219589c79a9d223538ae857e65b1c'},
-        ]
-    }, {
-        id: 2,
-        category: "Guitar song",
-        title: "Ed Sheeran - Castle on the hill",
-        audio: [
-            {id: 1, url: 'http://127.0.0.1:9000/audio/c209a2e2-37bc-4c69-b32f-5c03c2c8fddf.ogg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=QsrL590FNy6laAmb%2F20230102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230102T204904Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=5f026e96655c0d8fbed5458a3159824ef0b219589c79a9d223538ae857e65b1c'},
-            {id: 2, url: 'http://127.0.0.1:9000/audio/c209a2e2-37bc-4c69-b32f-5c03c2c8fddf.ogg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=QsrL590FNy6laAmb%2F20230102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230102T204904Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=5f026e96655c0d8fbed5458a3159824ef0b219589c79a9d223538ae857e65b1c'},
-        ]
-    },{
-        id: 3,
-        category: "Dick",
-        title: "CUMbat Alina - Deep DS",
-        audio: [
-            {id: 1, url: 'http://127.0.0.1:9000/audio/c209a2e2-37bc-4c69-b32f-5c03c2c8fddf.ogg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=QsrL590FNy6laAmb%2F20230102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230102T204904Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=5f026e96655c0d8fbed5458a3159824ef0b219589c79a9d223538ae857e65b1c'},
-            {id: 2, url: 'http://127.0.0.1:9000/audio/c209a2e2-37bc-4c69-b32f-5c03c2c8fddf.ogg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=QsrL590FNy6laAmb%2F20230102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230102T204904Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=5f026e96655c0d8fbed5458a3159824ef0b219589c79a9d223538ae857e65b1c'},
-        ]
+        audio: []
     }]
 
     constructor() {
@@ -47,6 +29,10 @@ export default class Store {
 
     setLoading(bool) {
         this.isLoading = bool;
+    }
+
+    setLessons(newLesson) {
+        this.lessons = [...this.lessons, newLesson];
     }
 
     async login(email, password, navigate) {
@@ -75,7 +61,7 @@ export default class Store {
 
     async logout(navigate) {
         try {
-            const response = await AuthService.logout();
+            await AuthService.logout();
             localStorage.removeItem('token');
             this.setAuth(false);
             this.setUser({});
@@ -100,12 +86,25 @@ export default class Store {
         }
     }
 
-    async sendAudio(blob) {
+    async sendAudio(blob, id) {
         try {
             const response = await AudioService.saveFile(blob);
             console.log(response);
+            this.lessons.find(lesson => lesson.id === id).audio.push({id: response.data.uploadAudioUrl, url: response.data.url});
         } catch (e) {
             console.error(e.response);
         }
+    }
+
+    async addLesson(title, category) {
+        // try {
+            // const response = await LessonService.addLesson(title, category);
+            let tempId = Math.floor(Math.random() * 100);
+            // const newLesson = {title, category, id: response.data.id, audio: []};
+            const newLesson = {title, category, id: tempId, audio: []};
+            this.setLessons(newLesson);
+        // } catch (e) {
+        //     console.error(e.response);
+        // }
     }
 }
