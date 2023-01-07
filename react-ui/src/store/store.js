@@ -100,7 +100,7 @@ export default class Store {
         // try {
             // const response = await LessonService.addLesson(title, category);
             let tempId = Math.floor(Math.random() * 100);
-            // const newLesson = {title, category, id: response.data.id, audio: []};
+            // const newLesson = {title, category, id: response.data.lessonId, audio: []};
             const newLesson = {title, category, id: tempId, audio: []};
             this.setLessons(newLesson);
         // } catch (e) {
