@@ -1,8 +1,9 @@
 import React, {useEffect, useRef} from 'react';
+import classes from "./AudioWave.module.css";
 
 const filterData = audioBuffer => {
     const rawData = audioBuffer.getChannelData(0);
-    const samples = 100;
+    const samples = 150;
     const blockSize = Math.floor(rawData.length / samples);
     const filteredData = [];
     for (let i = 0; i < samples; i++) {
@@ -42,7 +43,7 @@ const AudioWave = ({audioBuffer}) => {
     const draw = normalizedData => {
         const canvas = canvasRef.current;
         const dpr = window.devicePixelRatio || 1;
-        const padding = 20;
+        const padding = 5;
         canvas.width = canvas.offsetWidth  * dpr;
         canvas.height = (canvas.offsetHeight + padding * 2) * dpr;
         const ctx = canvas.getContext("2d");
@@ -64,8 +65,8 @@ const AudioWave = ({audioBuffer}) => {
     }
 
     return (
-        <div>
-            <canvas ref={canvasRef}></canvas>
+        <div className={classes.container}>
+            <canvas ref={canvasRef} className={classes.canvas}></canvas>
         </div>
     );
 };
