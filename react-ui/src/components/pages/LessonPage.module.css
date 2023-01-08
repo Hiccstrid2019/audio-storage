@@ -1,0 +1,41 @@
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    font-family: 'Work Sans',  sans-serif;
+}
+
+.title {
+    font-weight: 700;
+    font-size: 20px;
+    margin: 10px;
+}
+
+.new {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.icon {
+    /*margin-left: 20px;*/
+    transition: all 300ms ease;
+}
+
+.iconHolder {
+    width: 29px;
+    height: 43px;
+    margin-left: 20px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.icon:hover {
+    transform: scale(1.3);
+}

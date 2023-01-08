@@ -2,25 +2,17 @@ import {makeAutoObservable} from "mobx";
 import AuthService from "../services/AuthService";
 import axios from "axios";
 import AudioService from "../services/AudioService";
+import LessonService from "../services/LessonService";
 
 export default class Store {
     user = {}
     isAuth = false;
-    isLoading = false;
+    isLoading = true;
     lessons = [{
         id: 1,
-        title: "Башня из слоновой кости",
-        audio: [
-            {id: 1, duration: 160},
-            {id: 2, duration: 170},
-        ]
-    }, {
-        id: 2,
-        title: "КИШ - Отражение",
-        audio: [
-            {id: 1, duration: 160},
-            {id: 2, duration: 170},
-        ]
+        title: "Eminem - Killshot",
+        category: "Rap",
+        audio: []
     }]
 
     constructor() {
@@ -39,13 +31,17 @@ export default class Store {
         this.isLoading = bool;
     }
 
+    setLessons(newLesson) {
+        this.lessons = [...this.lessons, newLesson];
+    }
+
     async login(email, password, navigate) {
         try {
             const responses = await AuthService.login(email, password);
             console.log(responses);
             localStorage.setItem('token', responses.data.token);
             this.setAuth(true);
-            this.setUser(responses.data.user);
+            this.setUser(responses.data.userInfo);
             navigate();
         } catch (e) {
             console.log(e.response?.data);
@@ -63,12 +59,13 @@ export default class Store {
         }
     }
 
-    async logout() {
+    async logout(navigate) {
         try {
-            const response = await AuthService.logout();
+            await AuthService.logout();
             localStorage.removeItem('token');
             this.setAuth(false);
-            this.setUser({})
+            this.setUser({});
+            navigate();
         } catch (e) {
             console.log(e.response?.data);
         }
@@ -76,12 +73,12 @@ export default class Store {
 
     async checkAuth() {
         this.setLoading(true);
-        try {
+        try{
             const response = await axios.get(`https://localhost:5001/api/auth/refresh-token`,{withCredentials: true});
             console.log(response);
-            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('token', response.data.authData.token);
             this.setAuth(true);
-            this.setUser(response.data.user)
+            this.setUser(response.data.userInfo)
         } catch (e) {
             console.log(e.response);
         } finally {
@@ -89,12 +86,25 @@ export default class Store {
         }
     }
 
-    async sendAudio(blob) {
+    async sendAudio(blob, id) {
         try {
             const response = await AudioService.saveFile(blob);
             console.log(response);
+            this.lessons.find(lesson => lesson.id === id).audio.push({id: response.data.uploadAudioUrl, url: response.data.url});
         } catch (e) {
             console.error(e.response);
         }
+    }
+
+    async addLesson(title, category) {
+        // try {
+            // const response = await LessonService.addLesson(title, category);
+            let tempId = Math.floor(Math.random() * 100);
+            // const newLesson = {title, category, id: response.data.lessonId, audio: []};
+            const newLesson = {title, category, id: tempId, audio: []};
+            this.setLessons(newLesson);
+        // } catch (e) {
+        //     console.error(e.response);
+        // }
     }
 }

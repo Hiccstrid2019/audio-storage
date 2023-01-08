@@ -1,0 +1,26 @@
+.btn {
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+}
+
+.btnOutline {
+    background-color: #ffffff;
+    border: 1px solid #1F2937;
+}
+
+.btnOutline:hover {
+    background-color: rgba(31, 41, 55, 0.6);
+    color: #ffffff;
+}
+
+.btnPrimary:hover {
+    background-color: rgba(31, 41, 55, 0.7);
+}
+
+.btnPrimary {
+    background-color: rgba(31, 41, 55, 0.6);
+    color: #ffffff;
+    border: 1px solid rgba(31, 41, 55, 0.6);
+}

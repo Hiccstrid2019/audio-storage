@@ -1,0 +1,39 @@
+.card {
+    background-color: #F9FAFB;
+    border-radius: 12px;
+    width: 250px;
+    height: 250px;
+    box-shadow: 0 13px 10px -7px rgba(0, 0, 0,0.1);
+    margin: 15px;
+}
+
+.card:hover {
+    box-shadow: 0 30px 18px -8px rgba(0, 0, 0,0.1);
+    transform: scale(1.10, 1.10);
+}
+
+.fill {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    height: 150px;
+    background-color: #E5E4E2;
+}
+
+.info {
+    font-family: 'Work Sans',  sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    margin: 16px;
+}
+
+.title {
+    font-family: 'Work Sans',  sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.link {
+    margin: 0;
+}

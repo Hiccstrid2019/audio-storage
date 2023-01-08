@@ -1,0 +1,21 @@
+.icon {
+    margin: 0 10px;
+    transition: all 500ms ease;
+    border-radius: 50%;
+}
+
+.icon:hover {
+    transform: rotate(45deg) scale(1.2);
+}
+
+.audio {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 10px;
+}
+
+.duration {
+    margin: 0 10px;
+    font-family: 'Work Sans',  sans-serif;
+}

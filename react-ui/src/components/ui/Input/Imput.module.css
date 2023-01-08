@@ -1,0 +1,16 @@
+.input {
+    box-sizing: border-box;
+    border-radius: 6px;
+    border: 1px solid #D1D5DB;
+    height: 36px;
+    width: 360px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+}
+
+.input::placeholder {
+    color: #9CA3AF;
+    font-family: 'Work Sans', serif;
+    font-weight: 500;
+    font-size: 12px;
+}
