@@ -1,8 +1,10 @@
-﻿namespace MusicProgress.Data;
+﻿using System;
+
+namespace MusicProgress.Data;
 
 public class Audio
 {
-    public int AudioId { get; set; }
-    public int UserId { get; set; }
-    public User User { get; set; }
+    public Guid AudioId { get; set; }
+    public int LessonId { get; set; }
+    public Lesson Lesson { get; set; }
 }

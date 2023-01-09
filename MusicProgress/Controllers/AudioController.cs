@@ -3,13 +3,13 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MusicProgress.Services;
+using MusicProgress.Models;
 using MusicProgress.Services.Interfaces;
 
 namespace MusicProgress.Controllers
 {
     [ApiController]
-    [Route("api")]
+    [Route("api/audio")]
     public class AudioController : ControllerBase
     {
         private readonly IAudioService _audioService;
@@ -18,14 +18,14 @@ namespace MusicProgress.Controllers
         {
             _audioService = audioService;
         }
-        [HttpPost("audio")]
-        public async Task<IActionResult> UploadAudio(IFormFile file)
+        [HttpPost("")]
+        public async Task<IActionResult> UploadAudio([FromForm] AudioModel model)
         {
-            if (file.Length > 0)
+            if (model.AudioFile.Length > 0)
             {
                 using var memoryStream = new MemoryStream();
-                await file.CopyToAsync(memoryStream);
-                var id = await _audioService.UploadAudioAsync(memoryStream);
+                await model.AudioFile.CopyToAsync(memoryStream);
+                var id = await _audioService.AddAudioForLessonAsync(memoryStream, model.LessonId);
                 var url = await _audioService.GetUrlAudioAsync(id);
                 return Ok(new {UploadAudioId = id, Url = url});
             }
@@ -33,7 +33,7 @@ namespace MusicProgress.Controllers
             return Ok();
         }
 
-        [HttpGet("audio/{fileName}")]
+        [HttpGet("{fileName}")]
         public async Task<IActionResult> DownloadAudio(string fileName)
         {
             var stream = await _audioService.GetAudioAsync(fileName);

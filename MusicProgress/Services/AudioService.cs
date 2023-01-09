@@ -18,11 +18,16 @@ public class AudioService : IAudioService
         _fileAppService = fileAppService;
     }
     
-    public async Task<string> UploadAudioAsync(Stream stream)
+    public async Task<string> AddAudioForLessonAsync(Stream stream, int lessonId)
     {
-        var id = Guid.NewGuid() + ".ogg";
-        await _fileAppService.UploadObjectAsync(id, stream);
-        return id;
+        var audio = new Audio()
+        {
+            LessonId = lessonId
+        };
+        await _context.Audios.AddAsync(audio);
+        await _context.SaveChangesAsync();
+        await _fileAppService.UploadObjectAsync(audio.AudioId.ToString(), stream);
+        return audio.AudioId.ToString();
     }
 
     public async Task<Stream> GetAudioAsync(string audioId)
