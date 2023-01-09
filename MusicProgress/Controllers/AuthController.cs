@@ -57,7 +57,7 @@ namespace MusicProgress.Controllers
         }
 
         [HttpPost("[action]")]
-        public ActionResult<AuthData> Login(LoginModel model)
+        public ActionResult<LoginResult> Login(LoginModel model)
         {
             var user = _userService.GetByEmail(model.Email);
             if (user == null)
@@ -85,11 +85,15 @@ namespace MusicProgress.Controllers
                 TokenExpires = DateTime.Now.AddDays(7)
             });
 
-            return _authService.GetToken(user.UserId);
+            return new LoginResult()
+            {
+                AuthData = _authService.GetToken(user.UserId),
+                UserInfo = new UserInfo() {Name = user.UserName}
+            };
         }
         
         [HttpGet("refresh-token")]
-        public ActionResult<AuthData> RefreshToken()
+        public ActionResult<LoginResult> RefreshToken()
         {
             var refreshToken = HttpContext.Request.Cookies["refreshToken"];
             var userId = _tokenService.GetUserIdByToken(refreshToken);
@@ -113,9 +117,14 @@ namespace MusicProgress.Controllers
                 TimeCreated = DateTime.Now,
                 TokenExpires = DateTime.Now.AddDays(7)
             });
-            return _authService.GetToken((int)userId);
+            return new LoginResult()
+            {
+                AuthData = _authService.GetToken(user.UserId),
+                UserInfo = new UserInfo() {Name = user.UserName}
+            };
         }
         
+        [Authorize]
         [HttpGet("[action]")]
         public IActionResult LogOut()
         {
