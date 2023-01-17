@@ -1,6 +1,10 @@
 import {IUser} from "../IUser";
 
-export interface AuthResponse {
+interface AuthData {
     accessToken: string
+}
+
+export interface AuthResponse {
+    authData: AuthData
     userInfo: IUser
 }

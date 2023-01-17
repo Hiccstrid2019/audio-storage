@@ -2,11 +2,10 @@ import React, {useContext} from 'react';
 import {NavLink} from "react-router-dom";
 import './Header.css';
 import AccountIcon from './account.svg'
-import {Context} from "../../index";
-import {observer} from "mobx-react-lite";
+import {useAppSelector} from "../../hoc/redux";
 
-function Header(props) {
-    const {store} = useContext(Context);
+function Header() {
+    const {isAuth, username} = useAppSelector(state => state.userReducer);
 
     return (
         <header className="header">
@@ -16,14 +15,14 @@ function Header(props) {
 
             <div className="profile-link">
                 <img src={AccountIcon}/>
-                {!store.isAuth ? (
+                {!isAuth ? (
                     <NavLink to='/login'>Login</NavLink>
                 ) : (
-                    <NavLink to='/profile'>{store.user.name}</NavLink>
+                    <NavLink to='/profile'>{username}</NavLink>
                 )}
             </div>
         </header>
     );
 }
 
-export default observer(Header);
+export default Header;

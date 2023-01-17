@@ -1,6 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useParams} from "react-router-dom";
-import {Context} from "../../index";
 import classes from "./LessonPage.module.css";
 import Audio from "../ui/Audio/Audio";
 import MicIcon from "./mic.svg"
@@ -8,7 +7,7 @@ import MicIconFrame1 from "./mic1.svg"
 import MicIconFrame2 from "./mic2.svg"
 import MicIconFrame3 from "./mic3.svg"
 import Button from "../ui/Button/Button";
-import {observer} from "mobx-react-lite";
+import {useAppDispatch, useAppSelector} from "../../hoc/redux";
 
 const icons = [
     MicIcon,
@@ -18,72 +17,80 @@ const icons = [
 ]
 
 const LessonPage = () => {
-    const {store} = useContext(Context);
+    const {lessons} = useAppSelector(state => state.lessonReducer);
+    const dispatch = useAppDispatch();
     useEffect(() => {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             alert('Your browser does not support recording!');
         }
     }, []);
 
-    const {id, intId = +id} = useParams();
+    const {id} = useParams();
 
-    const [{mediaRecorder}, setMediaRecorder] = useState({});
-    const [chunks, setChunks] = useState([]);
+    // const [{mediaRecorder}, setMediaRecorder] = useState<Recorder>({} as Recorder);
+    const mediaRecorderRef = useRef<MediaRecorder>();
+    const [chunks, setChunks] = useState<BlobPart[]>([]);
     const [start, setStart] = useState(false);
     const [recording, setRecording] = useState(false);
     const [index, setIndex] = useState(0);
-    const [{timer}, setTimer] = useState({});
+    // const [{timer}, setTimer] = useState({});
+    const timerRef = useRef<NodeJS.Timer>();
 
     const handleRecord = () => {
         setRecording(recording => !recording);
-        if (timer == null) {
-            let newTimer = setInterval(() => {
+        if (timerRef.current == undefined) {
+            const timerId = setInterval(() => {
                 setIndex(index => index + 1);
             }, 500);
-            setTimer(() => ({timer: newTimer}));
+            timerRef.current = timerId;
+            // setTimer(() => ({timer: newTimer}));
         } else {
-            setTimer(prevState => {
-                let {timer} = prevState;
-                clearInterval(timer);
-                setIndex(0);
-                return {timer: null};
-            })
+            // setTimer(prevState => {
+            //     let {timer} = prevState;
+            //     clearInterval(timer);
+            //     setIndex(0);
+            //     return {timer: null};
+            // })
+            clearInterval(timerRef.current);
+            setIndex(0);
+            timerRef.current = undefined;
         }
 
-        if (mediaRecorder == null) {
+        if (mediaRecorderRef.current == null) {
             navigator.mediaDevices.getUserMedia({audio: true})
                 .then((stream) => {
-                    let newRecorder =  new MediaRecorder(stream);
+                    const newRecorder =  new MediaRecorder(stream);
                     newRecorder.start();
                     newRecorder.onstop = stopRecording;
                     newRecorder.ondataavailable = (e) => {
-                        chunks.push(e.data);
+                        // chunks.push(e.data);
                         setChunks(chunks => [...chunks, e.data]);
                     };
-                    setMediaRecorder(() => ({mediaRecorder: newRecorder}));
+                    // setMediaRecorder(() => ({mediaRecorder: newRecorder}));
+                    mediaRecorderRef.current = newRecorder;
                 })
                 .catch((err) => {
                     console.error(err);
                 })
         } else {
-            mediaRecorder.stop();
-            setMediaRecorder({});
+            mediaRecorderRef.current.stop();
+            mediaRecorderRef.current = undefined;
             setRecording(false);
             setStart(false);
         }
     }
 
-    const stopRecording = (e) => {
+    const stopRecording = () => {
         const blob = new Blob(chunks, {type: "audio/ogg; codecs=opus;" });
-        store.sendAudio(blob, intId);
+        // store.sendAudio(blob, id);
         setChunks([]);
     }
 
     return (
         <div className={classes.container}>
-            <div className={classes.title}>{store.lessons.find(lesson => lesson.id === Number(id)).title}</div>
+            <div className={classes.title}>{lessons?.find(lesson => lesson.id === id)?.title}</div>
             {
-                store.lessons.find(lesson => lesson.id === intId).audio.map(audio => <Audio key={audio.id} audioUrl={audio.url}/>)
+                lessons?.find(lesson => lesson.id === id)?.audios?.map(audio => <Audio key={audio.id} audioUrl={audio.url}/>)
             }
             <div className={classes.new}>
                 {!start ? <Button text="Add new record" onClick={() => setStart(true)}/> :
@@ -100,4 +107,4 @@ const LessonPage = () => {
     );
 };
 
-export default observer(LessonPage);
+export default LessonPage;

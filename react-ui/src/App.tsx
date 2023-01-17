@@ -1,7 +1,5 @@
 import './App.css';
-import {useContext, useEffect} from "react";
-import {Context} from "./index";
-import {observer} from "mobx-react-lite";
+import {useEffect} from "react";
 import {Route, Routes} from "react-router-dom";
 import Login from "./components/pages/Login";
 import Register from "./components/pages/Register";
@@ -11,16 +9,17 @@ import BaseLayout from "./components/pages/BaseLayout";
 import Homepage from "./components/pages/Homepage";
 import AudioStorage from "./components/pages/AudioStorage";
 import LessonPage from "./components/pages/LessonPage";
+import {useAppDispatch, useAppSelector} from "./hoc/redux";
+import {checkAuth} from "./store/reducers/UserActions";
 
 function App() {
-    const {store} = useContext(Context);
+    const dispatch = useAppDispatch();
+    const {isLoading} = useAppSelector(state => state.userReducer);
     useEffect(() => {
-        if (localStorage.getItem("token")) {
-            store.checkAuth();
-        }
+        dispatch(checkAuth());
     },[]);
 
-    if (store.isLoading) {
+    if (isLoading) {
         return <div>Loading....</div>
     }
   return (
@@ -31,17 +30,17 @@ function App() {
                   <Route path='/login' element={<Login/>}/>
                   <Route path='/register' element={<Register/>}/>
                   <Route path='/profile' element={
-                      <RequireAuth isAuth={store.isAuth}>
+                      <RequireAuth>
                           <Profile/>
                       </RequireAuth>
                   }/>
                   <Route path='/audio' element={
-                      <RequireAuth isAuth={store.isAuth}>
+                      <RequireAuth>
                           <AudioStorage/>
                       </RequireAuth>
                   }/>
                   <Route path='/audio/:id' element={
-                      <RequireAuth isAuth={store.isAuth}>
+                      <RequireAuth>
                           <LessonPage/>
                       </RequireAuth>
                   }/>
@@ -52,4 +51,4 @@ function App() {
   );
 }
 
-export default observer(App);
+export default App;

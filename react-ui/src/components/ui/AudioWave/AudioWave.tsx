@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from 'react';
 import classes from "./AudioWave.module.css";
 
-const filterData = audioBuffer => {
+const filterData = (audioBuffer: AudioBuffer) => {
     const rawData = audioBuffer.getChannelData(0);
     const samples = 150;
     const blockSize = Math.floor(rawData.length / samples);
@@ -17,36 +17,45 @@ const filterData = audioBuffer => {
     return filteredData;
 }
 
-const normalizeData = filteredData => {
+const normalizeData = (filteredData: number[]) => {
     const multiplier = Math.pow(Math.max(...filteredData), -1);
     return filteredData.map(n => n * multiplier);
 }
 
-const drawLineSegment = (ctx, x, y, width, isEven) => {
+const drawLineSegment = (ctx: CanvasRenderingContext2D,
+                         x: number,
+                         y: number,
+                         width: number,
+                         isEven: number) => {
     ctx.lineWidth = 1;
     ctx.strokeStyle = "#1F2937";
     ctx.beginPath();
     y = isEven ? y : -y;
     ctx.moveTo(x, 0);
     ctx.lineTo(x, y);
-    ctx.arc(x + width / 2, y, width / 2, Math.PI, 0, isEven);
+    ctx.arc(x + width / 2, y, width / 2, Math.PI, 0, !!isEven);
     ctx.lineTo(x + width, 0);
     ctx.stroke();
 }
 
-const AudioWave = ({audioBuffer}) => {
-    const canvasRef = useRef(null);
+interface AudioWaveProps {
+    audioBuffer: AudioBuffer
+}
+
+const AudioWave = ({audioBuffer} : AudioWaveProps) => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
     useEffect(() => {
         draw(normalizeData(filterData(audioBuffer)));
     }, []);
 
-    const draw = normalizedData => {
-        const canvas = canvasRef.current;
+    const draw = (normalizedData: number[]) => {
+        const canvas = canvasRef.current!;
         const dpr = window.devicePixelRatio || 1;
         const padding = 5;
         canvas.width = canvas.offsetWidth  * dpr;
         canvas.height = (canvas.offsetHeight + padding * 2) * dpr;
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d")!;
         ctx.scale(dpr, dpr);
         ctx.translate(0, canvas.offsetHeight / 2 + padding);
 

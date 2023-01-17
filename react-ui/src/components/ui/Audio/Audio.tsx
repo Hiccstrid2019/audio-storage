@@ -4,7 +4,23 @@ import PlayIcon from './play.svg';
 import PauseIcon from './pause.svg'
 import classes from "./Audio.module.css";
 
-const Audio = ({audioUrl}) => {
+interface AudioProps {
+    audioUrl: string
+}
+
+interface AudioSource {
+    source: AudioBufferSourceNode
+}
+
+interface ArrayAudioBuffer {
+    audioBuffer: AudioBuffer
+}
+
+interface Duration {
+    duration: Date
+}
+
+const Audio = ({audioUrl}: AudioProps) => {
     useEffect(() => {
         setLoading(true);
         fetch(audioUrl)
@@ -20,16 +36,16 @@ const Audio = ({audioUrl}) => {
     // const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     // const source = audioContext.createBufferSource();
     const [{audioContext}, setAudioContext] = useState({audioContext: new (window.AudioContext || window.webkitAudioContext)()})
-    const [{audioBuffer}, setAudioBuffer] = useState({});
-    const [{source}, setSource] = useState({});
+    const [{audioBuffer}, setAudioBuffer] = useState<ArrayAudioBuffer>({} as ArrayAudioBuffer);
+    const [{source}, setSource] = useState<AudioSource>({} as AudioSource);
     const [loading, setLoading] = useState(true);
-    const [{duration}, setDuration] = useState({});
+    const [{duration}, setDuration] = useState<Duration>({} as Duration);
     const [play, setPlay] = useState(false);
     const [pausedAt, setPausedAt] = useState(0);
     const [startedAt, setStartedAt] = useState(0);
 
-    const playTrack = (e) => {
-        if (play === false) {
+    const playTrack = () => {
+        if (!play) {
             const newSource = audioContext.createBufferSource();
             newSource.connect(audioContext.destination);
             newSource.buffer = audioBuffer;
@@ -44,9 +60,9 @@ const Audio = ({audioUrl}) => {
         } else {
             setPausedAt(audioContext.currentTime - startedAt);
             setStartedAt(0);
-            source.disconnect();
-            source.stop();
-            setSource({});
+            source!.disconnect();
+            source!.stop();
+            setSource({} as AudioSource);
         }
         setPlay(!play);
     }
@@ -59,7 +75,7 @@ const Audio = ({audioUrl}) => {
             ) : (
                     <>
                         <AudioWave audioBuffer={audioBuffer}/>
-                        <span className={classes.duration}>{duration.getMinutes() + ':' + duration.getSeconds()}</span>
+                        <span className={classes.duration}>{duration!.getMinutes() + ':' + duration!.getSeconds()}</span>
                     </>
             )}
         </div>

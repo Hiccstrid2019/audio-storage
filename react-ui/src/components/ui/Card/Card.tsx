@@ -2,7 +2,13 @@ import React from 'react';
 import classes from "./Card.module.css";
 import {Link} from "react-router-dom";
 
-const Card = ({category, title, id}) => {
+interface CardProps {
+    category: string,
+    title: string,
+    id: string
+}
+
+const Card = ({category, title, id} : CardProps) => {
     return (
         <Link className={classes.link} to={`/audio/${id}`}>
             <div className={classes.card}>
