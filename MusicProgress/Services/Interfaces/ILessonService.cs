@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using MusicProgress.Data;
 
 namespace MusicProgress.Services.Interfaces;
 
 public interface ILessonService
 {
-    Task<int> CreateLessonAsync(Lesson lesson);
+    Task<string> CreateLessonAsync(Lesson lesson);
+    Task<List<AudioResult>> GetLessonsAsync(int userId);
 }

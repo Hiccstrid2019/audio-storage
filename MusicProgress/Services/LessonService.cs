@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using MusicProgress.Data;
 using MusicProgress.Services.Interfaces;
 
@@ -12,10 +13,15 @@ public class LessonService : ILessonService
     {
         _context = context;
     }
-    public async Task<int> CreateLessonAsync(Lesson lesson)
+    public async Task<string> CreateLessonAsync(Lesson lesson)
     {
         await _context.Lessons.AddAsync(lesson);
         await _context.SaveChangesAsync();
-        return lesson.LessonId;
+        return lesson.LessonId.ToString();
+    }
+
+    public Task<List<AudioResult>> GetLessonsAsync(int userId)
+    {
+        throw new System.NotImplementedException();
     }
 }
