@@ -42,10 +42,11 @@ namespace MusicProgress.Controllers
                 new CookieOptions()
                 {
                     HttpOnly = true,
-                    Expires = DateTime.Now.AddDays(7)   
+                    Expires = DateTime.Now.AddDays(7),
+                    SameSite = SameSiteMode.None
                 });
             var userId = _userService.CreateUser(user);
-            _tokenService.SetRefreshToken(new RefreshToken()
+            _tokenService.SetRefreshToken(userId, new RefreshToken()
             {
                 UserId = userId,
                 Token = token,
@@ -73,16 +74,16 @@ namespace MusicProgress.Controllers
                 new CookieOptions()
                 {
                     HttpOnly = true,
-                    Expires = DateTime.Now.AddDays(7),
+                    Expires = DateTime.Now.AddDays(30),
                     SameSite = SameSiteMode.None,
                     Secure = true
                 });
-            _tokenService.SetRefreshToken(new RefreshToken()
+            _tokenService.SetRefreshToken(user.UserId, new RefreshToken()
             {
                 UserId = user.UserId,
                 Token = token,
                 TimeCreated = DateTime.Now,
-                TokenExpires = DateTime.Now.AddDays(7)
+                TokenExpires = DateTime.Now.AddDays(30)
             });
 
             return new LoginResult()
@@ -91,31 +92,37 @@ namespace MusicProgress.Controllers
                 UserInfo = new UserInfo() {Name = user.UserName}
             };
         }
-        
+
         [HttpGet("refresh-token")]
         public ActionResult<LoginResult> RefreshToken()
         {
             var refreshToken = HttpContext.Request.Cookies["refreshToken"];
-            var userId = _tokenService.GetUserIdByToken(refreshToken);
-            if (userId == null)
+            if (string.IsNullOrEmpty(refreshToken))
             {
-                return Unauthorized("Invalid Refresh Token");
+                return Unauthorized("Are not refresh token");
+            }
+            var tokenData = _tokenService.ValidateRefreshToken(refreshToken);
+            if (tokenData == null)
+            {
+                return Unauthorized("Token are expired");
             }
 
-            var user = _userService.GetById((int) userId);
+            var user = _userService.GetById(tokenData.UserId);
             var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
             HttpContext.Response.Cookies.Append("refreshToken", token,
                 new CookieOptions()
                 {
                     HttpOnly = true,
-                    Expires = DateTime.Now.AddDays(7)   
+                    Expires = DateTime.Now.AddDays(30),
+                    SameSite = SameSiteMode.None,
+                    Secure = true
                 });
-            _tokenService.SetRefreshToken(new RefreshToken()
+            _tokenService.SetRefreshToken(user.UserId, new RefreshToken()
             {
                 UserId = user.UserId,
                 Token = token,
                 TimeCreated = DateTime.Now,
-                TokenExpires = DateTime.Now.AddDays(7)
+                TokenExpires = DateTime.Now.AddDays(30)
             });
             return new LoginResult()
             {
@@ -123,7 +130,7 @@ namespace MusicProgress.Controllers
                 UserInfo = new UserInfo() {Name = user.UserName}
             };
         }
-        
+
         [Authorize]
         [HttpGet("[action]")]
         public IActionResult LogOut()

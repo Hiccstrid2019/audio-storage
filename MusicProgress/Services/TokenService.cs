@@ -1,4 +1,5 @@
-﻿using MusicProgress.Data;
+﻿using System;
+using MusicProgress.Data;
 using MusicProgress.Services.Interfaces;
 using System.Linq;
 
@@ -11,14 +12,33 @@ public class TokenService : ITokenService
     {
         _context = context;
     }
-    public int? GetUserIdByToken(string token)
+    public RefreshToken? ValidateRefreshToken(string token)
     {
-        return _context.RefreshTokens.SingleOrDefault(t => t.Token == token)?.UserId;
+        var tokenData = _context.RefreshTokens.FirstOrDefault(t => t.Token == token);
+        if (tokenData != null && DateTime.Now < tokenData.TokenExpires)
+        {
+            return tokenData;
+        }
+        else if (tokenData != null)
+        {
+            RemoveRefreshToken(token);
+        }
+        return null;
     }
 
-    public void SetRefreshToken(RefreshToken refreshToken)
+    public void SetRefreshToken(int userId, RefreshToken refreshToken)
     {
-        _context.RefreshTokens.Add(refreshToken);
+        var token = _context.RefreshTokens.FirstOrDefault(t => t.UserId == userId);
+        if (token != null)
+        {
+            token.Token = refreshToken.Token;
+            token.TimeCreated = refreshToken.TimeCreated;
+            token.TokenExpires = refreshToken.TokenExpires;
+        }
+        else
+        {
+            _context.RefreshTokens.Add(refreshToken);
+        }
         _context.SaveChanges();
     }
 

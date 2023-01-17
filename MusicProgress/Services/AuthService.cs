@@ -72,7 +72,7 @@ public class AuthService : IAuthService
         var token = tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescription));
         return new AuthData()
         {
-            Token = token
+            AccessToken = token
         };
     }
 }

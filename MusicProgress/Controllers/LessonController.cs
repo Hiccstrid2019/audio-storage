@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +23,7 @@ namespace MusicProgress.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Lesson(LessonModel model)
+        public async Task<ActionResult> Lesson(LessonModel model)
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
@@ -33,7 +34,7 @@ namespace MusicProgress.Controllers
                 UserId = Convert.ToInt32(userId)
             };
             var lessonId = await _lessonService.CreateLessonAsync(newLesson);
-            return Ok(new { LessonId = lessonId });
+            return Ok(new { Id = lessonId, Title = model.Title, Category = model.Category});
         }
     }
 }
