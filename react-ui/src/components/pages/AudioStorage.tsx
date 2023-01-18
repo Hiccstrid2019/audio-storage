@@ -1,12 +1,18 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Card from "../ui/Card/Card";
 import classes from "./AudioStorage.module.css";
 import Modal from "../ui/Modal/Modal";
-import {useAppSelector} from "../../hoc/redux";
+import {useAppDispatch, useAppSelector} from "../../hoc/redux";
+import {fetchLessons} from "../../store/reducers/LessonActions";
 
 const AudioStorage = () => {
     const [active, setActive] = useState(false);
     const {lessons} = useAppSelector(state => state.lessonReducer);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(fetchLessons());
+    }, [])
 
     return (
         <div className={classes.container}>

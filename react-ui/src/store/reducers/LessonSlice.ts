@@ -1,6 +1,6 @@
 import {ILesson} from "../../models/ILesson";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {addLesson, fetchLessons} from "./LessonActions";
+import {addAudio, addLesson, CreatedAudio, fetchLessons} from "./LessonActions";
 
 interface LessonState {
     lessons: ILesson[];
@@ -35,6 +35,14 @@ export const lessonSlice = createSlice({
             state.lessons.push(action.payload);
         },
         [addLesson.rejected.type]: (state: LessonState, action: PayloadAction<string>) => {
+            console.log(action.payload)
+        },
+
+        [addAudio.fulfilled.type]: (state: LessonState, action: PayloadAction<CreatedAudio>) => {
+            state.lessons.find(l => l.id === action.payload.lessonId)!.audios = state.lessons.find(l => l.id === action.payload.lessonId)?.audios || [];
+            state.lessons.find(l => l.id === action.payload.lessonId)?.audios?.push(action.payload.audio);
+        },
+        [addAudio.rejected.type]: (state: LessonState, action: PayloadAction<string>) => {
             console.log(action.payload)
         },
     }

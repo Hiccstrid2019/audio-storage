@@ -8,6 +8,7 @@ import MicIconFrame2 from "./mic2.svg"
 import MicIconFrame3 from "./mic3.svg"
 import Button from "../ui/Button/Button";
 import {useAppDispatch, useAppSelector} from "../../hoc/redux";
+import {addAudio} from "../../store/reducers/LessonActions";
 
 const icons = [
     MicIcon,
@@ -25,15 +26,12 @@ const LessonPage = () => {
         }
     }, []);
 
-    const {id} = useParams();
-
-    // const [{mediaRecorder}, setMediaRecorder] = useState<Recorder>({} as Recorder);
+    const {id} = useParams<string>();
     const mediaRecorderRef = useRef<MediaRecorder>();
     const [chunks, setChunks] = useState<BlobPart[]>([]);
     const [start, setStart] = useState(false);
     const [recording, setRecording] = useState(false);
     const [index, setIndex] = useState(0);
-    // const [{timer}, setTimer] = useState({});
     const timerRef = useRef<NodeJS.Timer>();
 
     const handleRecord = () => {
@@ -43,14 +41,7 @@ const LessonPage = () => {
                 setIndex(index => index + 1);
             }, 500);
             timerRef.current = timerId;
-            // setTimer(() => ({timer: newTimer}));
         } else {
-            // setTimer(prevState => {
-            //     let {timer} = prevState;
-            //     clearInterval(timer);
-            //     setIndex(0);
-            //     return {timer: null};
-            // })
             clearInterval(timerRef.current);
             setIndex(0);
             timerRef.current = undefined;
@@ -63,7 +54,7 @@ const LessonPage = () => {
                     newRecorder.start();
                     newRecorder.onstop = stopRecording;
                     newRecorder.ondataavailable = (e) => {
-                        // chunks.push(e.data);
+                        chunks.push(e.data);
                         setChunks(chunks => [...chunks, e.data]);
                     };
                     // setMediaRecorder(() => ({mediaRecorder: newRecorder}));
@@ -82,7 +73,7 @@ const LessonPage = () => {
 
     const stopRecording = () => {
         const blob = new Blob(chunks, {type: "audio/ogg; codecs=opus;" });
-        // store.sendAudio(blob, id);
+        dispatch(addAudio({blob, lessonId: id+''}));
         setChunks([]);
     }
 
@@ -90,7 +81,7 @@ const LessonPage = () => {
         <div className={classes.container}>
             <div className={classes.title}>{lessons?.find(lesson => lesson.id === id)?.title}</div>
             {
-                lessons?.find(lesson => lesson.id === id)?.audios?.map(audio => <Audio key={audio.id} audioUrl={audio.url}/>)
+                lessons.find(lesson => lesson.id === id)?.audios?.map(audio => <Audio key={audio.id} audioUrl={audio.url}/>)
             }
             <div className={classes.new}>
                 {!start ? <Button text="Add new record" onClick={() => setStart(true)}/> :
