@@ -1,9 +1,10 @@
-import {useLocation, useNavigate} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {useAppDispatch} from "../../hoc/redux";
 import {login} from "../../store/reducers/UserActions";
 import {useState} from "react";
 import Button from "../ui/Button/Button";
 import Input from "../ui/Input/Input";
+import classes from './Login.module.css';
 
 const Login = () => {
     const dispatch = useAppDispatch();
@@ -20,10 +21,11 @@ const Login = () => {
     };
 
     return (
-        <div>
+        <div className={classes.container}>
             <Input text='Email' setValue={setEmail}/>
             <Input text='Password' setValue={setPassword}/>
             <Button text='Login' onClick={() => handleForm()}/>
+            Yet don't have account? <Link to='/register'>Register</Link>
         </div>
     );
 };
