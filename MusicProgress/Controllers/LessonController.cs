@@ -21,7 +21,17 @@ namespace MusicProgress.Controllers
         {
             _lessonService = lessonService;
         }
-
+        
+        [HttpGet("lessons")]
+        public async Task<ActionResult<List<LessonResult>>> GetLessons()
+        {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
+            var lessons = await _lessonService.GetLessonsAsync(Convert.ToInt32(userId));
+            return lessons;
+        }
+        
+        
         [HttpPost("[action]")]
         public async Task<ActionResult> Lesson(LessonModel model)
         {

@@ -24,7 +24,7 @@ namespace MusicProgress.Controllers
         }
 
         [HttpPost("[action]")]
-        public ActionResult<AuthData> Register(RegisterModel model)
+        public ActionResult<LoginResult> Register(RegisterModel model)
         {
             var emailUniq = _userService.IsEmailUniq(model.Email);
             if (!emailUniq)
@@ -54,7 +54,11 @@ namespace MusicProgress.Controllers
                 TokenExpires = DateTime.Now.AddDays(7)
             });
 
-            return _authService.GetToken(userId);
+            return new LoginResult()
+            {
+                AuthData = _authService.GetToken(user.UserId),
+                UserInfo = new UserInfo() {Name = user.UserName}
+            };
         }
 
         [HttpPost("[action]")]

@@ -7,5 +7,5 @@ namespace MusicProgress.Services.Interfaces;
 public interface ILessonService
 {
     Task<string> CreateLessonAsync(Lesson lesson);
-    Task<List<AudioResult>> GetLessonsAsync(int userId);
+    Task<List<LessonResult>> GetLessonsAsync(int userId);
 }

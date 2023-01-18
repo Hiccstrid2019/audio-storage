@@ -18,11 +18,11 @@ public class AudioService : IAudioService
         _fileAppService = fileAppService;
     }
     
-    public async Task<string> AddAudioForLessonAsync(Stream stream, int lessonId)
+    public async Task<string> AddAudioForLessonAsync(Stream stream, string lessonId)
     {
         var audio = new Audio()
         {
-            LessonId = lessonId
+            LessonId = Guid.Parse(lessonId)
         };
         await _context.Audios.AddAsync(audio);
         await _context.SaveChangesAsync();

@@ -6,8 +6,7 @@ namespace MusicProgress.Services.Interfaces;
 
 public interface IAudioService
 {
-    Task<string> AddAudioForLessonAsync(Stream stream, int lessonId);
+    Task<string> AddAudioForLessonAsync(Stream stream, string lessonId);
     Task<Stream> GetAudioAsync(string audioId);
     Task<string> GetUrlAudioAsync(string audioId);
-    Task<List<string>> GetAudioIdsByUserIdAsync(int userId);
 }
