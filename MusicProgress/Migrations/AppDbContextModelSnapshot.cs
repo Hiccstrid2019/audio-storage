@@ -25,15 +25,12 @@ namespace MusicProgress.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("LessonId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("LessonId1")
+                    b.Property<Guid>("LessonId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("AudioId");
 
-                    b.HasIndex("LessonId1");
+                    b.HasIndex("LessonId");
 
                     b.ToTable("Audios");
                 });
@@ -109,7 +106,9 @@ namespace MusicProgress.Migrations
                 {
                     b.HasOne("MusicProgress.Data.Lesson", "Lesson")
                         .WithMany()
-                        .HasForeignKey("LessonId1");
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Lesson");
                 });

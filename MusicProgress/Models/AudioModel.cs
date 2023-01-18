@@ -4,6 +4,6 @@ namespace MusicProgress.Models;
 
 public class AudioModel
 {
-    public int LessonId { get; set; }
+    public string LessonId { get; set; }
     public IFormFile AudioFile { get; set; }
 }

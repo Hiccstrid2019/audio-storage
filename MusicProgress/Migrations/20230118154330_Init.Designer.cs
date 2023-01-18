@@ -11,8 +11,8 @@ using MusicProgress.Data;
 namespace MusicProgress.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230109185525_Change key for audio to guid")]
-    partial class Changekeyforaudiotoguid
+    [Migration("20230118154330_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,8 +27,8 @@ namespace MusicProgress.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("LessonId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("LessonId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("AudioId");
 
@@ -39,9 +39,9 @@ namespace MusicProgress.Migrations
 
             modelBuilder.Entity("MusicProgress.Data.Lesson", b =>
                 {
-                    b.Property<int>("LessonId")
+                    b.Property<Guid>("LessonId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Category")
                         .HasColumnType("longtext");

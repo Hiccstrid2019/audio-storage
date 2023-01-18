@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MusicProgress.Migrations
 {
-    public partial class RefreshToken : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,6 +29,29 @@ namespace MusicProgress.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Lessons",
+                columns: table => new
+                {
+                    LessonId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Title = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Category = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lessons", x => x.LessonId);
+                    table.ForeignKey(
+                        name: "FK_Lessons_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -56,6 +79,35 @@ namespace MusicProgress.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "Audios",
+                columns: table => new
+                {
+                    AudioId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    LessonId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Audios", x => x.AudioId);
+                    table.ForeignKey(
+                        name: "FK_Audios_Lessons_LessonId",
+                        column: x => x.LessonId,
+                        principalTable: "Lessons",
+                        principalColumn: "LessonId",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Audios_LessonId",
+                table: "Audios",
+                column: "LessonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lessons_UserId",
+                table: "Lessons",
+                column: "UserId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
@@ -65,7 +117,13 @@ namespace MusicProgress.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Audios");
+
+            migrationBuilder.DropTable(
                 name: "RefreshTokens");
+
+            migrationBuilder.DropTable(
+                name: "Lessons");
 
             migrationBuilder.DropTable(
                 name: "Users");
