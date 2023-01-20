@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MusicProgress.Data;
 
+[Table("refreshtokens")]
 public class RefreshToken
 {
     public int RefreshTokenId { get; set; }

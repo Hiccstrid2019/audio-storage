@@ -1,8 +1,10 @@
 ﻿
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MusicProgress.Data;
 
+[Table("lessons")]
 public class Lesson
 {
     public Guid LessonId { get; set; }
