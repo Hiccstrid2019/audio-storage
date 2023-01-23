@@ -43,7 +43,8 @@ namespace MusicProgress.Controllers
                 {
                     HttpOnly = true,
                     Expires = DateTime.Now.AddDays(7),
-                    SameSite = SameSiteMode.None
+                    SameSite = SameSiteMode.None,
+                    Secure = true
                 });
             var userId = _userService.CreateUser(user);
             _tokenService.SetRefreshToken(userId, new RefreshToken()
