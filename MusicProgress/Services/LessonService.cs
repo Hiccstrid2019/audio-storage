@@ -25,6 +25,16 @@ public class LessonService : ILessonService
         return lesson.LessonId.ToString();
     }
 
+    public async Task RemoveLessonAsync(Guid lessonId)
+    {
+        var lesson = await _context.Lessons.FirstOrDefaultAsync(l => l.LessonId == lessonId);
+        if (lesson != null)
+        {
+            _context.Lessons.Remove(lesson);
+            await _context.SaveChangesAsync();
+        }
+    }
+
     public async Task<List<LessonResult>> GetLessonsAsync(int userId)
     {
         var lessons = await _context.Lessons

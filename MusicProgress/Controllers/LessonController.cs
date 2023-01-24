@@ -46,5 +46,12 @@ namespace MusicProgress.Controllers
             var lessonId = await _lessonService.CreateLessonAsync(newLesson);
             return Ok(new { Id = lessonId, Title = model.Title, Category = model.Category});
         }
+        
+        [HttpDelete("lesson/{id}")]
+        public async Task<ActionResult> DeleteLesson(string id)
+        {
+            await _lessonService.RemoveLessonAsync(Guid.Parse(id));
+            return Ok(new {Id = id});
+        }
     }
 }
