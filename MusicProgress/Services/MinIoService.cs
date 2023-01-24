@@ -20,6 +20,12 @@ public class MinIoService : IFileAppService
 
     public async Task UploadObjectAsync(string name, Stream data)
     {
+        bool exist = await _client.BucketExistsAsync(new BucketExistsArgs().WithBucket(_config.BucketName));
+        if (!exist)
+        {
+            await _client.MakeBucketAsync(new MakeBucketArgs().WithBucket(_config.BucketName));
+        }
+        
         data.Seek(0, SeekOrigin.Begin);
         var putObjectArgs = new PutObjectArgs()
             .WithBucket(_config.BucketName)
