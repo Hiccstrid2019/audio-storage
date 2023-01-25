@@ -33,6 +33,18 @@ export const addLesson = createAsyncThunk(
     }
 )
 
+export const deleteLesson = createAsyncThunk(
+    'lesson/deleteLesson',
+    async (id: string, thunkAPI) => {
+        try {
+            const response = await LessonService.deleteLesson(id);
+            return response.data;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+    }
+)
+
 interface CreateAudioModel {
     blob: Blob;
     lessonId: string;

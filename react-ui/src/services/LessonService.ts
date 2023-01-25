@@ -10,4 +10,8 @@ export default class LessonService {
     static async addLesson(title: string, category: string): Promise<AxiosResponse<ILesson>> {
         return api.post<ILesson>(this.serviceUrl + "/lesson", {title, category});
     }
+
+    static async deleteLesson(id: string) : Promise<AxiosResponse<ILesson>> {
+        return api.delete(this.serviceUrl + `/lesson/${id}`);
+    }
 }
