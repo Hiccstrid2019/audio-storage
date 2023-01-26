@@ -1,30 +1,30 @@
 import React, {useEffect, useState} from 'react';
 import Card from "../ui/Card/Card";
-import classes from "./AudioStorage.module.css";
+import classes from "./ProjectStorage.module.css";
 import Modal from "../ui/Modal/Modal";
 import {useAppDispatch, useAppSelector} from "../../hoc/redux";
-import {fetchLessons} from "../../store/reducers/LessonActions";
+import {fetchProjects} from "../../store/reducers/ProjectActions";
 
-const AudioStorage = () => {
+const ProjectStorage = () => {
     const [active, setActive] = useState(false);
-    const {lessons} = useAppSelector(state => state.lessonReducer);
+    const {projects} = useAppSelector(state => state.projectReducer);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(fetchLessons());
+        dispatch(fetchProjects());
     }, [])
 
     return (
         <div className={classes.container}>
             {
-                lessons.map((lesson) => <Card key={lesson.id} category={lesson.category} title={lesson.title} id={lesson.id}/>)
+                projects.map((project) => <Card key={project.id} category={project.category} title={project.title} id={project.id}/>)
             }
             <div className={classes.newLesson} onClick={() => setActive(true)}>
-                Add Lesson
+                Add Project
             </div>
             {active && <Modal active={active} setActive={setActive}/>}
         </div>
     );
 };
 
-export default AudioStorage;
+export default ProjectStorage;

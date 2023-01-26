@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MusicProgress.Data;
 
-[Table("lessons")]
-public class Lesson
+[Table("projects")]
+public class Project
 {
-    public Guid LessonId { get; set; }
+    public Guid ProjectId { get; set; }
     public string Title { get; set; }
     public string Category { get; set; }
     public int UserId { get; set; }

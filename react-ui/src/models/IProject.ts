@@ -1,6 +1,6 @@
 import {IAudio} from "./IAudio";
 
-export interface ILesson {
+export interface IProject {
     id: string;
     title: string;
     category: string;

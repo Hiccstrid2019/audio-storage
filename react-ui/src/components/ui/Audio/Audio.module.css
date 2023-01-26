@@ -9,6 +9,7 @@
 }
 
 .audio {
+    width: 620px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -16,6 +17,9 @@
 }
 
 .duration {
+    width: 40px;
+    display: flex;
+    justify-content: flex-end;
     margin: 0 10px;
-    font-family: 'Work Sans',  sans-serif;
+    font-family: 'Roboto',  sans-serif;
 }

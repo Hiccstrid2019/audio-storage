@@ -1,6 +1,6 @@
 ﻿namespace MusicProgress.Models;
 
-public class LessonModel
+public class ProjectModel
 {
     public string Title { get; set; }
     public string Category { get; set; }

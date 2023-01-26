@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MusicProgress.Data;
 
-public class LessonResult
+public class ProjectResult
 {
     public Guid Id { get; set; }
     public string Title { get; set; }

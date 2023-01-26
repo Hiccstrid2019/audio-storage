@@ -7,8 +7,8 @@ import RequireAuth from "./hoc/RequireAuth";
 import Profile from "./components/pages/Profile";
 import BaseLayout from "./components/pages/BaseLayout";
 import Homepage from "./components/pages/Homepage";
-import AudioStorage from "./components/pages/AudioStorage";
-import LessonPage from "./components/pages/LessonPage";
+import ProjectStorage from "./components/pages/ProjectStorage";
+import ProjectPage from "./components/pages/ProjectPage";
 import {useAppDispatch, useAppSelector} from "./hoc/redux";
 import {checkAuth} from "./store/reducers/UserActions";
 
@@ -18,7 +18,6 @@ function App() {
     useEffect(() => {
         dispatch(checkAuth());
     },[]);
-
     if (isLoading) {
         return <div>Loading....</div>
     }
@@ -34,14 +33,14 @@ function App() {
                           <Profile/>
                       </RequireAuth>
                   }/>
-                  <Route path='/audio' element={
+                  <Route path='/project' element={
                       <RequireAuth>
-                          <AudioStorage/>
+                          <ProjectStorage/>
                       </RequireAuth>
                   }/>
-                  <Route path='/audio/:id' element={
+                  <Route path='/project/:id' element={
                       <RequireAuth>
-                          <LessonPage/>
+                          <ProjectPage/>
                       </RequireAuth>
                   }/>
               </Route>

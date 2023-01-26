@@ -3,7 +3,7 @@ import classes from "./Modal.module.css";
 import Input from "../Input/Input";
 import Button from "../Button/Button";
 import {useAppDispatch} from "../../../hoc/redux";
-import {addLesson} from "../../../store/reducers/LessonActions";
+import {addProject} from "../../../store/reducers/ProjectActions";
 
 interface ModalProps {
     active: boolean;
@@ -17,17 +17,17 @@ const Modal = ({active, setActive}: ModalProps) => {
     const handleForm = () => {
         // addLesson(name, category);
         setActive(false);
-        dispatch(addLesson({title, category}));
+        dispatch(addProject({title, category}));
     }
     return (
         <div className={classes.container} onClick={() => setActive(false)}>
             <div className={classes.content} onClick={e => e.stopPropagation()}>
-                <div className={classes.title}>Create new lesson</div>
-                <Input text="Enter lesson name" setValue={setTitle}/>
+                <div className={classes.title}>Create new project</div>
+                <Input text="Enter project name" setValue={setTitle}/>
                 <Input text="Enter category name" setValue={setCategory}/>
                 <div className={classes.btnRow}>
                     <Button text='Cancel' style={{marginRight: "8px"}} onClick={() => setActive(false)}/>
-                    <Button text='Add lesson' type='primary' onClick={handleForm}/>
+                    <Button text='Add project' type='primary' onClick={handleForm}/>
                 </div>
             </div>
         </div>

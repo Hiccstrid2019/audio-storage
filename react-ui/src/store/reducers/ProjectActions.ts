@@ -1,13 +1,13 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import LessonService from "../../services/LessonService";
+import ProjectService from "../../services/ProjectService";
 import AudioService from "../../services/AudioService";
 import {IAudio} from "../../models/IAudio";
 
-export const fetchLessons = createAsyncThunk(
-    'lesson/fetchAll',
+export const fetchProjects = createAsyncThunk(
+    'project/fetchProjects',
     async (_, thunkAPI) => {
         try {
-            const response = await LessonService.getLessons();
+            const response = await ProjectService.getProjects();
             return response.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
@@ -15,17 +15,17 @@ export const fetchLessons = createAsyncThunk(
     }
 )
 
-interface CreateLessonModel {
+interface CreateProjectModel {
     title: string;
     category: string;
 }
 
-export const addLesson = createAsyncThunk(
-    'lesson/addLesson',
-    async (model: CreateLessonModel, thunkAPI) => {
+export const addProject = createAsyncThunk(
+    'project/addProject',
+    async (model: CreateProjectModel, thunkAPI) => {
         try {
             const {title, category} = model;
-            const response = await LessonService.addLesson(title, category);
+            const response = await ProjectService.addProject(title, category);
             return response.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
@@ -33,11 +33,11 @@ export const addLesson = createAsyncThunk(
     }
 )
 
-export const deleteLesson = createAsyncThunk(
-    'lesson/deleteLesson',
+export const deleteProject = createAsyncThunk(
+    'project/deleteProject',
     async (id: string, thunkAPI) => {
         try {
-            const response = await LessonService.deleteLesson(id);
+            const response = await ProjectService.deleteProject(id);
             return response.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);

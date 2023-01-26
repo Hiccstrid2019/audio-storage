@@ -1,9 +1,9 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
-import lessonReducer from './reducers/LessonSlice'
+import projectReducer from './reducers/ProjectSlice'
 import userReducer from './reducers/UserSlice'
 
 const rootReducer = combineReducers({
-    lessonReducer,
+    projectReducer,
     userReducer
 })
 

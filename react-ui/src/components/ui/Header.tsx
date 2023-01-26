@@ -10,7 +10,7 @@ function Header() {
     return (
         <header className="header">
             <NavLink to='/'>Home</NavLink>
-            <NavLink to='/audio'>My records</NavLink>
+            <NavLink to='/project'>My records</NavLink>
 
 
             <div className="profile-link">

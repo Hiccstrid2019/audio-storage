@@ -18,11 +18,11 @@ public class AudioService : IAudioService
         _fileAppService = fileAppService;
     }
     
-    public async Task<string> AddAudioForLessonAsync(Stream stream, string lessonId)
+    public async Task<string> AddAudioForProjectAsync(Stream stream, string projectId)
     {
         var audio = new Audio()
         {
-            LessonId = Guid.Parse(lessonId)
+            ProjectId = Guid.Parse(projectId)
         };
         await _context.Audios.AddAsync(audio);
         await _context.SaveChangesAsync();
@@ -40,10 +40,5 @@ public class AudioService : IAudioService
     {
         var url = await _fileAppService.GetUrlObjectAsync(audioId);
         return url;
-    }
-
-    public Task<List<string>> GetAudioIdsByUserIdAsync(int userId)
-    {
-        throw new System.NotImplementedException();
     }
 }

@@ -27,7 +27,7 @@ namespace MusicProgress.Controllers
             {
                 using var memoryStream = new MemoryStream();
                 await model.AudioFile.CopyToAsync(memoryStream);
-                var id = await _audioService.AddAudioForLessonAsync(memoryStream, model.LessonId);
+                var id = await _audioService.AddAudioForProjectAsync(memoryStream, model.LessonId);
                 var url = await _audioService.GetUrlAudioAsync(id);
                 return Ok(new {Id = id, Url = url});
             }

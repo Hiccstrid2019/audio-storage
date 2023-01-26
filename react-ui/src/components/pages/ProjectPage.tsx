@@ -1,14 +1,16 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useParams} from "react-router-dom";
-import classes from "./LessonPage.module.css";
+import classes from "./ProjectPage.module.css";
 import Audio from "../ui/Audio/Audio";
 import MicIcon from "./mic.svg"
 import MicIconFrame1 from "./mic1.svg"
 import MicIconFrame2 from "./mic2.svg"
 import MicIconFrame3 from "./mic3.svg"
+import EditIcon from "./edit.svg"
+import ApplyIcon from "./apply.svg"
 import Button from "../ui/Button/Button";
 import {useAppDispatch, useAppSelector} from "../../hoc/redux";
-import {addAudio} from "../../store/reducers/LessonActions";
+import {addAudio} from "../../store/reducers/ProjectActions";
 
 const icons = [
     MicIcon,
@@ -17,8 +19,8 @@ const icons = [
     MicIconFrame3,
 ]
 
-const LessonPage = () => {
-    const {lessons} = useAppSelector(state => state.lessonReducer);
+const ProjectPage = () => {
+    const {projects} = useAppSelector(state => state.projectReducer);
     const dispatch = useAppDispatch();
     useEffect(() => {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -33,6 +35,7 @@ const LessonPage = () => {
     const [recording, setRecording] = useState(false);
     const [index, setIndex] = useState(0);
     const timerRef = useRef<NodeJS.Timer>();
+    const [isEditing, setEditing] = useState(false);
 
     const handleRecord = () => {
         setRecording(recording => !recording);
@@ -57,7 +60,6 @@ const LessonPage = () => {
                         chunks.push(e.data);
                         setChunks(chunks => [...chunks, e.data]);
                     };
-                    // setMediaRecorder(() => ({mediaRecorder: newRecorder}));
                     mediaRecorderRef.current = newRecorder;
                 })
                 .catch((err) => {
@@ -76,12 +78,47 @@ const LessonPage = () => {
         dispatch(addAudio({blob, lessonId: id+''}));
         setChunks([]);
     }
+    // const title = projects?.find(project => project.id === id)?.title;
+    const [title, setTitle] = useState(projects?.find(project => project.id === id)?.title);
+    const [width, setWidth] = useState(0);
+    const titleRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        console.log(titleRef.current?.offsetWidth!)
+        setWidth(titleRef.current?.offsetWidth!);
+    },[title]);
+
+    const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
+    {
+        setTitle(e.target.value);
+    }
+
+    const editedTitle = () => {
+        setEditing(false);
+    }
 
     return (
         <div className={classes.container}>
-            <div className={classes.title}>{lessons?.find(lesson => lesson.id === id)?.title}</div>
+            <div className={classes.title}>
+                {
+                    !isEditing ? (
+                        <>
+                            <div ref={titleRef}>
+                                {title}
+                            </div>
+                            <img src={EditIcon} className={classes.editIcon} onClick={() => setEditing(true)}/>
+                        </>
+                    ) : (
+                        <>
+                            <div ref={titleRef} style={{position: "absolute", opacity: "0"}}>{title}</div>
+                            <input defaultValue={title} className={classes.titleEdit} style={{width}}
+                            onChange={inputHandler} autoFocus/>
+                            <img src={ApplyIcon} className={classes.editIcon} onClick={editedTitle}/>
+                        </>
+                    )
+                }
+            </div>
             {
-                lessons.find(lesson => lesson.id === id)?.audios?.map(audio => <Audio key={audio.id} audioUrl={audio.url}/>)
+                projects.find(project => project.id === id)?.audios?.map(audio => <Audio key={audio.id} audioUrl={audio.url}/>)
             }
             <div className={classes.new}>
                 {!start ? <Button text="Add new record" onClick={() => setStart(true)}/> :
@@ -98,4 +135,4 @@ const LessonPage = () => {
     );
 };
 
-export default LessonPage;
+export default ProjectPage;

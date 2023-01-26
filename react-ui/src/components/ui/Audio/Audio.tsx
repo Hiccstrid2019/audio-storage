@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import AudioWave from "../AudioWave/AudioWave";
 import PlayIcon from './play.svg';
 import PauseIcon from './pause.svg'
@@ -8,61 +8,60 @@ interface AudioProps {
     audioUrl: string
 }
 
-interface AudioSource {
-    source: AudioBufferSourceNode
-}
-
-interface ArrayAudioBuffer {
-    audioBuffer: AudioBuffer
-}
-
-interface Duration {
-    duration: Date
-}
-
 const Audio = ({audioUrl}: AudioProps) => {
     useEffect(() => {
         setLoading(true);
         fetch(audioUrl)
             .then(response => response.arrayBuffer())
-            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+            .then(arrayBuffer => refAudioContext.current.decodeAudioData(arrayBuffer))
             .then(audioBuffer => {
-                setAudioBuffer(state => ({...state, audioBuffer}));
+                refAudioBuffer.current = audioBuffer;
                 setLoading(false);
-                setDuration(duration => ({...duration, duration: new Date(audioBuffer.duration * 1000)}));
+                durationRef.current = new Date(audioBuffer.duration * 1000);
+                setMinutes(durationRef.current?.getMinutes());
+                setSeconds(durationRef.current?.getSeconds());
             });
     },[]);
 
-    // const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    // const source = audioContext.createBufferSource();
-    const [{audioContext}, setAudioContext] = useState({audioContext: new (window.AudioContext || window.webkitAudioContext)()})
-    const [{audioBuffer}, setAudioBuffer] = useState<ArrayAudioBuffer>({} as ArrayAudioBuffer);
-    const [{source}, setSource] = useState<AudioSource>({} as AudioSource);
+    const refAudioContext = useRef<AudioContext>(new (window.AudioContext || window.webkitAudioContext)());
+    const refAudioBuffer = useRef<AudioBuffer>();
+    const refSource = useRef<AudioBufferSourceNode>();
     const [loading, setLoading] = useState(true);
-    const [{duration}, setDuration] = useState<Duration>({} as Duration);
+    const durationRef = useRef<Date>();
+    const [seconds, setSeconds] = useState(0);
+    const [minutes, setMinutes] = useState(0);
     const [play, setPlay] = useState(false);
     const [pausedAt, setPausedAt] = useState(0);
     const [startedAt, setStartedAt] = useState(0);
+    const timerRef = useRef<NodeJS.Timer>();
 
     const playTrack = () => {
+        const audioContext = refAudioContext.current;
         if (!play) {
             const newSource = audioContext.createBufferSource();
             newSource.connect(audioContext.destination);
-            newSource.buffer = audioBuffer;
+            if (refAudioBuffer.current) {
+                newSource.buffer = refAudioBuffer.current;
+            }
             newSource.onended = () => {
                 setPlay(false);
+                clearInterval(timerRef.current);
             };
-            console.log(pausedAt)
+            setSeconds(pausedAt);
+            timerRef.current = setInterval(() => {
+                setSeconds(seconds => seconds + 1);
+            }, 1000);
             newSource.start(0, pausedAt);
-            setSource(source => ({...source, source: newSource}));
+            refSource.current = newSource;
             setStartedAt(startedAt => audioContext.currentTime - pausedAt);
             setPausedAt(0);
         } else {
             setPausedAt(audioContext.currentTime - startedAt);
             setStartedAt(0);
-            source!.disconnect();
-            source!.stop();
-            setSource({} as AudioSource);
+            clearInterval(timerRef.current);
+            refSource.current?.disconnect();
+            refSource.current?.stop();
+            refSource.current = undefined;
         }
         setPlay(!play);
     }
@@ -74,8 +73,8 @@ const Audio = ({audioUrl}: AudioProps) => {
             {loading ? ('Loading'
             ) : (
                     <>
-                        <AudioWave audioBuffer={audioBuffer}/>
-                        <span className={classes.duration}>{duration!.getMinutes() + ':' + duration!.getSeconds()}</span>
+                        <AudioWave audioBuffer={refAudioBuffer.current!}/>
+                        <span className={classes.duration}>{minutes}:{(Math.round(seconds) >= 10) ? Math.round(seconds) : '0' + Math.round(seconds)}</span>
                     </>
             )}
         </div>

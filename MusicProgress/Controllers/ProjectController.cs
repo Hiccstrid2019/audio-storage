@@ -13,44 +13,44 @@ namespace MusicProgress.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class LessonController : ControllerBase
+    public class ProjectController : ControllerBase
     {
-        private readonly ILessonService _lessonService;
+        private readonly IProjectService _projectService;
 
-        public LessonController(ILessonService lessonService)
+        public ProjectController(IProjectService projectService)
         {
-            _lessonService = lessonService;
+            _projectService = projectService;
         }
         
-        [HttpGet("lessons")]
-        public async Task<ActionResult<List<LessonResult>>> GetLessons()
+        [HttpGet("projects")]
+        public async Task<ActionResult<List<ProjectResult>>> GetProjects()
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
-            var lessons = await _lessonService.GetLessonsAsync(Convert.ToInt32(userId));
-            return lessons;
+            var projects = await _projectService.GetProjectsAsync(Convert.ToInt32(userId));
+            return projects;
         }
         
         
         [HttpPost("[action]")]
-        public async Task<ActionResult> Lesson(LessonModel model)
+        public async Task<ActionResult> Project(ProjectModel model)
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
-            var newLesson = new Lesson()
+            var newProject = new Project()
             {
                 Category = model.Category,
                 Title = model.Title,
                 UserId = Convert.ToInt32(userId)
             };
-            var lessonId = await _lessonService.CreateLessonAsync(newLesson);
-            return Ok(new { Id = lessonId, Title = model.Title, Category = model.Category});
+            var projectId = await _projectService.CreateProjectAsync(newProject);
+            return Ok(new { Id = projectId, Title = model.Title, Category = model.Category});
         }
         
-        [HttpDelete("lesson/{id}")]
-        public async Task<ActionResult> DeleteLesson(string id)
+        [HttpDelete("project/{id}")]
+        public async Task<ActionResult> DeleteProject(string id)
         {
-            await _lessonService.RemoveLessonAsync(Guid.Parse(id));
+            await _projectService.RemoveProjectAsync(Guid.Parse(id));
             return Ok(new {Id = id});
         }
     }
