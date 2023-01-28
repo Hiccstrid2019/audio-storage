@@ -10,7 +10,7 @@ import EditIcon from "./edit.svg"
 import ApplyIcon from "./apply.svg"
 import Button from "../ui/Button/Button";
 import {useAppDispatch, useAppSelector} from "../../hoc/redux";
-import {addAudio} from "../../store/reducers/ProjectActions";
+import {addAudio, updateProject} from "../../store/reducers/ProjectActions";
 
 const icons = [
     MicIcon,
@@ -18,6 +18,10 @@ const icons = [
     MicIconFrame2,
     MicIconFrame3,
 ]
+
+interface DateModified {
+    timeModified: Date;
+}
 
 const ProjectPage = () => {
     const {projects} = useAppSelector(state => state.projectReducer);
@@ -35,7 +39,18 @@ const ProjectPage = () => {
     const [recording, setRecording] = useState(false);
     const [index, setIndex] = useState(0);
     const timerRef = useRef<NodeJS.Timer>();
-    const [isEditing, setEditing] = useState(false);
+    const [isEditingTitle, setEditingTitle] = useState(false);
+    const [isEditingCategory, setEditingCategory] = useState(false);
+    const project = projects.find(project => project.id === id);
+    const [title, setTitle] = useState<string>(projects?.find(project => project.id === id)!.title);
+    const [category, setCategory] = useState<string>(projects?.find(project => project.id === id)!.category);
+    const [widthTitle, setWidthTitle] = useState(0);
+    const [widthCategory, setWidthCategory] = useState(0);
+    const titleRef = useRef<HTMLDivElement>(null);
+    const categoryRef = useRef<HTMLDivElement>(null);
+    const options: Intl.DateTimeFormatOptions = {day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit'}
+    const timeCreated = new Date(project!.timeCreated);
+    const timeModified = new Date(project!.timeModified);
 
     const handleRecord = () => {
         setRecording(recording => !recording);
@@ -78,58 +93,95 @@ const ProjectPage = () => {
         dispatch(addAudio({blob, lessonId: id+''}));
         setChunks([]);
     }
-    // const title = projects?.find(project => project.id === id)?.title;
-    const [title, setTitle] = useState(projects?.find(project => project.id === id)?.title);
-    const [width, setWidth] = useState(0);
-    const titleRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
-        console.log(titleRef.current?.offsetWidth!)
-        setWidth(titleRef.current?.offsetWidth!);
+        setWidthTitle(titleRef.current?.offsetWidth!);
     },[title]);
 
-    const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
+    useEffect(() => {
+        setWidthCategory(categoryRef.current?.offsetWidth!);
+    },[category]);
+
+    const inputHandlerTitle = (e: React.ChangeEvent<HTMLInputElement>) =>
     {
         setTitle(e.target.value);
     }
 
-    const editedTitle = () => {
-        setEditing(false);
+    const inputHandlerCategory = (e: React.ChangeEvent<HTMLInputElement>) =>
+    {
+        setCategory(e.target.value);
+    }
+
+    const editInfo = () => {
+        setEditingTitle(false);
+        setEditingCategory(false);
+        dispatch(updateProject({id: project!.id, title, category: category}))
     }
 
     return (
         <div className={classes.container}>
-            <div className={classes.title}>
-                {
-                    !isEditing ? (
-                        <>
-                            <div ref={titleRef}>
-                                {title}
-                            </div>
-                            <img src={EditIcon} className={classes.editIcon} onClick={() => setEditing(true)}/>
-                        </>
-                    ) : (
-                        <>
-                            <div ref={titleRef} style={{position: "absolute", opacity: "0"}}>{title}</div>
-                            <input defaultValue={title} className={classes.titleEdit} style={{width}}
-                            onChange={inputHandler} autoFocus/>
-                            <img src={ApplyIcon} className={classes.editIcon} onClick={editedTitle}/>
-                        </>
-                    )
-                }
+            <div className={classes.info}>
+                <div className={classes.block}>
+                    Category:&nbsp;
+                    {
+                        !isEditingCategory ? (
+                            <>
+                                <div ref={categoryRef} className={classes.italicBold}>
+                                    {category}
+                                </div>
+                                <img src={EditIcon} className={classes.editIcon} onClick={() => setEditingCategory(true)}/>
+                            </>
+                        ) : (
+                            <>
+                                <div ref={categoryRef} style={{position: "absolute", opacity: "0", left: "-99999px"}}>{category}</div>
+                                <input defaultValue={category} className={classes.categoryEdit} style={{width: widthCategory}}
+                                       onChange={inputHandlerCategory} autoFocus/>
+                                <img src={ApplyIcon} className={classes.editIcon} onClick={editInfo}/>
+                            </>
+                        )
+                    }
+                </div>
+                <div className={classes.block}>
+                    Created: {timeCreated.toLocaleString("ru-RU", options)}
+                </div>
+                <div className={classes.block}>
+                    Last modified: {timeModified.toLocaleString("ru-RU", options)}
+                </div>
             </div>
-            {
-                projects.find(project => project.id === id)?.audios?.map(audio => <Audio key={audio.id} audioUrl={audio.url}/>)
-            }
-            <div className={classes.new}>
-                {!start ? <Button text="Add new record" onClick={() => setStart(true)}/> :
-                    <>
-                        Click mic to {!recording ? 'start' : 'stop'} recording
-                        <div className={classes.iconHolder}>
-                            <img src={icons[index % icons.length]}
-                                 className={classes.icon}
-                                 onClick={handleRecord}/>
-                        </div>
-                    </>}
+            <div className={classes.main}>
+                <div className={classes.title}>
+                    {
+                        !isEditingTitle ? (
+                            <>
+                                <div ref={titleRef}>
+                                    {title}
+                                </div>
+                                <img src={EditIcon} className={classes.editIcon} onClick={() => setEditingTitle(true)}/>
+                            </>
+                        ) : (
+                            <>
+                                <div ref={titleRef} style={{position: "absolute", opacity: "0", left: "-99999px"}}>{title}</div>
+                                <input defaultValue={title} className={classes.titleEdit} style={{width: widthTitle}}
+                                       onChange={inputHandlerTitle} autoFocus/>
+                                <img src={ApplyIcon} className={classes.editIcon} onClick={editInfo}/>
+                            </>
+                        )
+                    }
+                </div>
+                {
+                    project?.audios?.map(audio => <Audio key={audio.id} audioUrl={audio.url} audioId={audio.id}/>)
+                }
+                <div className={classes.new}>
+                    {!start ? <Button text="Add new record" onClick={() => setStart(true)}/> :
+                        <>
+                            Click mic to {!recording ? 'start' : 'stop'} recording
+                            <div className={classes.iconHolder}>
+                                <img src={icons[index % icons.length]}
+                                     className={classes.icon}
+                                     onClick={handleRecord}/>
+                            </div>
+                        </>}
+                </div>
             </div>
         </div>
     );
