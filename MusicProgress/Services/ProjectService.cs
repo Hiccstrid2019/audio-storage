@@ -44,6 +44,8 @@ public class ProjectService : IProjectService
                 Id = project.ProjectId,
                 Title = project.Title,
                 Category = project.Category,
+                TimeCreated = project.TimeCreated,
+                TimeModified = project.TimeModified,
                 Audios = _context.Audios.Where(audio => audio.ProjectId == project.ProjectId)
                     .Select(audio => new AudioResult() {Id = audio.AudioId, Url = ""})
                     .ToList()
@@ -57,5 +59,19 @@ public class ProjectService : IProjectService
         }
 
         return projects;
+    }
+
+    public async Task<Project> UpdateProjectAsync(Project updatedProject)
+    {
+        var project = await _context.Projects.FirstOrDefaultAsync(l => l.ProjectId == updatedProject.ProjectId);
+        if (project != null)
+        {
+            project.Title = updatedProject.Title;
+            project.Category = updatedProject.Category;
+            project.TimeModified = updatedProject.TimeModified;
+            await _context.SaveChangesAsync();
+        }
+        project = await _context.Projects.FirstOrDefaultAsync(l => l.ProjectId == updatedProject.ProjectId);
+        return updatedProject;
     }
 }
