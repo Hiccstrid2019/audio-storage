@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MusicProgress.Data;
 using MusicProgress.Services.Interfaces;
 
@@ -40,5 +41,18 @@ public class AudioService : IAudioService
     {
         var url = await _fileAppService.GetUrlObjectAsync(audioId);
         return url;
+    }
+
+    public async Task<Audio> RemoveAudioAsync(Guid audioId)
+    {
+        var audio = await _context.Audios.FirstOrDefaultAsync(audio => audio.AudioId == audioId);
+        if (audio != null)
+        {
+            _context.Audios.Remove(audio);
+            await _context.SaveChangesAsync();
+            await _fileAppService.RemoveObjectAsync(audio.AudioId.ToString());
+        }
+
+        return audio;
     }
 }

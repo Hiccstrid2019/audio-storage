@@ -20,7 +20,7 @@ namespace MusicProgress.Controllers
         {
             _audioService = audioService;
         }
-        [HttpPost("")]
+        [HttpPost]
         public async Task<IActionResult> UploadAudio([FromForm] AudioModel model)
         {
             if (model.AudioFile.Length > 0)
@@ -35,11 +35,18 @@ namespace MusicProgress.Controllers
             return NotFound();
         }
 
-        [HttpGet("{fileName}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> DownloadAudio(string fileName)
         {
             var stream = await _audioService.GetAudioAsync(fileName);
             return File(stream, "application/octet-stream");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAudio(string id)
+        {
+            var audio = await _audioService.RemoveAudioAsync(Guid.Parse(id));
+            return Ok(new {AudioId = audio.AudioId, ProjectId = audio.ProjectId});
         }
     }
 }

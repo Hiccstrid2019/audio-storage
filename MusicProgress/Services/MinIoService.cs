@@ -36,6 +36,14 @@ public class MinIoService : IFileAppService
         await _client.PutObjectAsync(putObjectArgs).ConfigureAwait(false);
     }
 
+    public async Task RemoveObjectAsync(string name)
+    {
+        var removeObjectArgs = new RemoveObjectArgs()
+            .WithBucket(_config.BucketName)
+            .WithObject(name);
+        await _client.RemoveObjectAsync(removeObjectArgs);
+    }
+
     public async Task<Stream> GetObjectAsync(string name)
     {
         using var memoryStream = new MemoryStream();
