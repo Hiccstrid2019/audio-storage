@@ -25,10 +25,7 @@ namespace MusicProgress.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("LessonId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("ProjectId")
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("AudioId");
@@ -46,6 +43,12 @@ namespace MusicProgress.Migrations
 
                     b.Property<string>("Category")
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("TimeCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("TimeModified")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Title")
                         .HasColumnType("longtext");
@@ -109,7 +112,9 @@ namespace MusicProgress.Migrations
                 {
                     b.HasOne("MusicProgress.Data.Project", "Project")
                         .WithMany()
-                        .HasForeignKey("ProjectId");
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Project");
                 });
