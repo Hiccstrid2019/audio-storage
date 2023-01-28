@@ -53,10 +53,20 @@
 }
 
 .noTrash {
-    visibility: hidden;
+    display: none;
 }
 
-.trash:hover {
-    background-color: rgba(31, 41, 55, 0.2);
-    transform: scale(1.1);
+.trash:hover, .editWall:hover {
+    transform: scale(1.2);
+}
+
+.editWall {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    margin-bottom: 20px;
+}
+
+.noEditWall {
+    display: none;
 }

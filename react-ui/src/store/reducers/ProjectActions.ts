@@ -45,6 +45,25 @@ export const deleteProject = createAsyncThunk(
     }
 )
 
+interface UpdateProjectModel {
+    id: string;
+    title: string;
+    category: string;
+}
+
+export const updateProject = createAsyncThunk(
+    'project/updateProject',
+    async (model: UpdateProjectModel, thunkAPI) => {
+        try {
+            const {id, title, category} = model;
+            const response = await ProjectService.updateProject(id, title, category);
+            return response.data;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+    }
+)
+
 interface CreateAudioModel {
     blob: Blob;
     lessonId: string;
@@ -63,6 +82,18 @@ export const addAudio = createAsyncThunk(
             const response = await AudioService.saveAudio(blob, lessonId);
             const result: CreatedAudio = {audio: response.data, lessonId: lessonId};
             return result;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+    }
+)
+
+export const deleteAudio = createAsyncThunk(
+    'project/deleteAudio',
+    async (id: string, thunkAPI) => {
+        try {
+            const response = await AudioService.deleteAudio(id);
+            return response.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
         }

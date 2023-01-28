@@ -2,13 +2,17 @@ import React, {useEffect, useRef, useState} from 'react';
 import AudioWave from "../AudioWave/AudioWave";
 import PlayIcon from './play.svg';
 import PauseIcon from './pause.svg'
+import TrashIcon from './trash.svg'
 import classes from "./Audio.module.css";
+import {useAppDispatch} from "../../../hoc/redux";
+import {deleteAudio} from "../../../store/reducers/ProjectActions";
 
 interface AudioProps {
-    audioUrl: string
+    audioUrl: string;
+    audioId: string;
 }
 
-const Audio = ({audioUrl}: AudioProps) => {
+const Audio = ({audioUrl, audioId}: AudioProps) => {
     useEffect(() => {
         setLoading(true);
         fetch(audioUrl)
@@ -34,6 +38,7 @@ const Audio = ({audioUrl}: AudioProps) => {
     const [pausedAt, setPausedAt] = useState(0);
     const [startedAt, setStartedAt] = useState(0);
     const timerRef = useRef<NodeJS.Timer>();
+    const dispatch = useAppDispatch();
 
     const playTrack = () => {
         const audioContext = refAudioContext.current;
@@ -66,6 +71,10 @@ const Audio = ({audioUrl}: AudioProps) => {
         setPlay(!play);
     }
 
+    const handleDeleteAudio = () => {
+        dispatch(deleteAudio(audioId));
+    }
+
     return (
         <div className={classes.audio}>
             {!play ? <img className={classes.icon} src={PlayIcon} onClick={playTrack}/> : <img className={classes.icon} src={PauseIcon} onClick={playTrack}/>}
@@ -77,6 +86,7 @@ const Audio = ({audioUrl}: AudioProps) => {
                         <span className={classes.duration}>{minutes}:{(Math.round(seconds) >= 10) ? Math.round(seconds) : '0' + Math.round(seconds)}</span>
                     </>
             )}
+            <img src={TrashIcon} className={classes.trashIcon} onClick={handleDeleteAudio}/>
         </div>
     );
 };

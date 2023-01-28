@@ -1,6 +1,14 @@
 import {IProject} from "../../models/IProject";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {addAudio, addProject, CreatedAudio, deleteProject, fetchProjects} from "./ProjectActions";
+import {
+    addAudio,
+    addProject,
+    CreatedAudio,
+    deleteAudio,
+    deleteProject,
+    fetchProjects,
+    updateProject
+} from "./ProjectActions";
 
 interface ProjectState {
     projects: IProject[];
@@ -39,8 +47,9 @@ export const projectSlice = createSlice({
         },
 
         [addAudio.fulfilled.type]: (state: ProjectState, action: PayloadAction<CreatedAudio>) => {
-            state.projects.find(l => l.id === action.payload.lessonId)!.audios = state.projects.find(l => l.id === action.payload.lessonId)?.audios || [];
-            state.projects.find(l => l.id === action.payload.lessonId)?.audios?.push(action.payload.audio);
+            const project = state.projects.find(l => l.id === action.payload.lessonId);
+            project!.audios = project?.audios || [];
+            project?.audios?.push(action.payload.audio);
         },
         [addAudio.rejected.type]: (state: ProjectState, action: PayloadAction<string>) => {
             console.log(action.payload)
@@ -48,8 +57,24 @@ export const projectSlice = createSlice({
 
         [deleteProject.fulfilled.type]: (state: ProjectState, action: PayloadAction<IProject>) => {
             state.projects = state.projects.filter(lesson => lesson.id !== action.payload.id);
+        },
+
+        [updateProject.fulfilled.type]: (state: ProjectState, action: PayloadAction<IProject>) => {
+            const project = state.projects.find(p => p.id === action.payload.id);
+            project!.title = action.payload.title;
+            project!.category = action.payload.category;
+            project!.timeModified = action.payload.timeModified;
+        },
+
+        [deleteAudio.fulfilled.type]: (state: ProjectState, action: PayloadAction<DeletedAudio>) => {
+            const project = state.projects.find(project => project.id === action.payload.projectId);
+            project!.audios = project!.audios?.filter(a => a.id !== action.payload.audioId);
         }
     }
 })
 
+interface DeletedAudio {
+    audioId: string;
+    projectId: string;
+}
 export default projectSlice.reducer;

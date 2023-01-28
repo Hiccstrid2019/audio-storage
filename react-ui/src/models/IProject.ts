@@ -4,5 +4,7 @@ export interface IProject {
     id: string;
     title: string;
     category: string;
+    timeCreated: string;
+    timeModified: string;
     audios?: IAudio[];
 }

@@ -23,3 +23,11 @@
     margin: 0 10px;
     font-family: 'Roboto',  sans-serif;
 }
+
+.trashIcon {
+    margin: 0 10px;
+}
+
+.trashIcon:hover {
+    transform: scale(1.2);
+}
