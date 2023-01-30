@@ -17,6 +17,9 @@
     border-radius: 12px 12px 0 0;
     height: 150px;
     background-color: #E5E4E2;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 250px auto;
 }
 
 .info {
@@ -65,8 +68,16 @@
     right: 8px;
     top: 8px;
     margin-bottom: 20px;
+    background-color: white;
+    padding: 1px 1px 4px 4px;
+    border-radius: 4px;
 }
 
 .noEditWall {
     display: none;
+}
+
+.hintModal {
+    color: gray;
+    margin: 10px;
 }
