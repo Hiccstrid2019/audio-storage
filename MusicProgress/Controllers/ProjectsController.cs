@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -29,6 +30,15 @@ namespace MusicProgress.Controllers
             var userId = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
             var projects = await _projectService.GetProjectsAsync(Convert.ToInt32(userId));
             return projects;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProjectResult>> GetProject(string id)
+        {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
+            var project = await _projectService.GetProjectAsync(Convert.ToInt32(userId), Guid.Parse(id));
+            return project;
         }
         
         
@@ -69,5 +79,20 @@ namespace MusicProgress.Controllers
             var project = await _projectService.UpdateProjectAsync(updatedProject);
             return Ok(new {Id = project.ProjectId, Title = project.Title, Category = project.Category, TimeModified = project.TimeModified});
         }
+
+        [HttpPost("poster")]
+        public async Task<ActionResult> AddPoster([FromForm] PosterModel model)
+        {
+            if (model.ImgFile.Length > 0)
+            {
+                using var memoryStream = new MemoryStream();
+                await model.ImgFile.CopyToAsync(memoryStream);
+                await _projectService.AddPosterAsync(model.ProjectId, memoryStream);
+                var url = await _projectService.GetUrlPosterAsync(model.ProjectId);
+                return Ok(new {ProjectId = model.ProjectId, PosterUrl = url});
+            }
+
+            return NotFound();
+        } 
     }
 }

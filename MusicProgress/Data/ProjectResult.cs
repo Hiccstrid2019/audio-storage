@@ -10,5 +10,6 @@ public class ProjectResult
     public string Category { get; set; }
     public DateTime TimeCreated { get; set; }
     public DateTime TimeModified { get; set; }
+    public string PosterUrl { get; set; }
     public List<AudioResult> Audios { get; set; }
 }
