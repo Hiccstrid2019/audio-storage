@@ -7,4 +7,5 @@ export interface IProject {
     timeCreated: string;
     timeModified: string;
     audios?: IAudio[];
+    posterUrl?: string;
 }

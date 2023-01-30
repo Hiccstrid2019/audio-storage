@@ -44,7 +44,7 @@ export const checkAuth = createAsyncThunk(
     'user/checkAuth',
     async (_, thunkAPI) => {
         try {
-            const response = await axios.get(`https://localhost:5001/api/auth/refresh-token`,{withCredentials: true});
+            const response = await axios.get(`${process.env.REACT_APP_SERVER_API}/api/auth/refresh-token`,{withCredentials: true});
             return response.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);

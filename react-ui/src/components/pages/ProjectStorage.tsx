@@ -26,7 +26,7 @@ const ProjectStorage = () => {
     return (
         <div className={classes.container}>
             {
-                projects.map((project) => <Card key={project.id} category={project.category} title={project.title} id={project.id}/>)
+                projects.map((project) => <Card key={project.id} category={project.category} title={project.title} id={project.id} posterUrl={project.posterUrl}/>)
             }
             <div className={classes.newLesson} onClick={() => setActive(true)}>
                 Add Project

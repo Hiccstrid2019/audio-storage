@@ -22,7 +22,7 @@ const Login = () => {
 
     return (
         <div className={classes.container}>
-            <Input text='Email' setValue={setEmail}/>
+            <Input autoFocus text='Email' setValue={setEmail}/>
             <Input text='Password' setValue={setPassword}/>
             <Button text='Login' onClick={() => handleForm()}/>
             Yet don't have account? <Link to='/register'>Register</Link>

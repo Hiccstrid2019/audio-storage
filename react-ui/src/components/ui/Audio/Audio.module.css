@@ -31,3 +31,7 @@
 .trashIcon:hover {
     transform: scale(1.2);
 }
+
+.preloader {
+    width: 500px;
+}

@@ -4,11 +4,12 @@ import React from "react";
 interface InputProps {
     text: string,
     setValue: React.Dispatch<string>
+    [props: string]: any;
 }
-const Input = ({text, setValue}: InputProps) => {
+const Input = ({text, setValue, ...rest}: InputProps) => {
     return (
         <div>
-            <input className={classes.input} placeholder={text} onChange={event => setValue(event.target.value)}/>
+            <input className={classes.input} placeholder={text} onChange={event => setValue(event.target.value)} {...rest}/>
         </div>
     );
 };

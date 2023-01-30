@@ -79,7 +79,8 @@ const Audio = ({audioUrl, audioId}: AudioProps) => {
         <div className={classes.audio}>
             {!play ? <img className={classes.icon} src={PlayIcon} onClick={playTrack}/> : <img className={classes.icon} src={PauseIcon} onClick={playTrack}/>}
 
-            {loading ? ('Loading'
+            {loading ? (
+                <div className={classes.preloader}></div>
             ) : (
                     <>
                         <AudioWave audioBuffer={refAudioBuffer.current!}/>

@@ -59,7 +59,20 @@ namespace MusicProgress
                 });
             });
 
-            var connString = Configuration.GetConnectionString("MySqlConnection");
+            string connString;
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+                var dbhost = Configuration["DB_HOST"];
+                var dbport = Configuration["DB_PORT"];
+                var dbuser = Configuration["DB_USER"];
+                var dbpassword = Configuration["DB_PASSWORD"];
+                var dbname = Configuration["DB_NAME"];
+                connString = $"server={dbhost};port={dbport};uid={dbuser};pwd={dbpassword};database={dbname}";
+            }
+            else
+            {
+                connString = Configuration.GetConnectionString("MySqlConnection");
+            }
             var severVersion = new MySqlServerVersion(new Version(8, 0, 32));
             services.AddDbContext<AppDbContext>(options => options.UseMySql(connString, severVersion));
             services.Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)));
@@ -70,6 +83,7 @@ namespace MusicProgress
                 {
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
+                        ClockSkew = TimeSpan.Zero,
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         ValidateLifetime = true,
@@ -85,11 +99,11 @@ namespace MusicProgress
             services.AddSingleton<IAuthService, AuthService>();
             services.AddScoped<IFileAppService, MinIoService>();
             services.AddScoped<IAudioService, AudioService>();
-            services.AddScoped<ILessonService, LessonService>();
+            services.AddScoped<IProjectService, ProjectService>();
 
             var minioConfig = Configuration.GetSection("MinIOSettings");
             services.AddScoped<MinioClient>(x => new MinioClient()
-                .WithEndpoint(minioConfig["Endpoint"])
+                .WithEndpoint(minioConfig["Host"] + ":" + minioConfig["Port"])
                 .WithCredentials(minioConfig["AccessKey"], minioConfig["SecretKey"])
                 .Build());
         }
@@ -97,10 +111,6 @@ namespace MusicProgress
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions()
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -111,7 +121,7 @@ namespace MusicProgress
             app.UseHttpsRedirection();
 
             app.UseCors(x => x
-                .WithOrigins("https://musicclient")
+                .WithOrigins(Configuration["AllowedHost"])
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod());
