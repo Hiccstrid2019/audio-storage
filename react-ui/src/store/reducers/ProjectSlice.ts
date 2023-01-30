@@ -1,14 +1,15 @@
 import {IProject} from "../../models/IProject";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {
-    addAudio,
+    addAudio, addPoster,
     addProject,
     CreatedAudio,
     deleteAudio,
-    deleteProject,
+    deleteProject, fetchProject,
     fetchProjects,
     updateProject
 } from "./ProjectActions";
+import {PosterResponse} from "../../models/response/PosterResponse";
 
 interface ProjectState {
     projects: IProject[];
@@ -38,6 +39,10 @@ export const projectSlice = createSlice({
             state.isLoading = false;
         },
 
+        [fetchProject.fulfilled.type]: (state: ProjectState, action: PayloadAction<IProject>) => {
+          state.projects.push(action.payload);
+        },
+
 
         [addProject.fulfilled.type]: (state: ProjectState, action: PayloadAction<IProject>) => {
             state.projects.push(action.payload);
@@ -64,6 +69,11 @@ export const projectSlice = createSlice({
             project!.title = action.payload.title;
             project!.category = action.payload.category;
             project!.timeModified = action.payload.timeModified;
+        },
+
+        [addPoster.fulfilled.type]: (state: ProjectState, action: PayloadAction<PosterResponse>) => {
+            const project = state.projects.find(project => project.id === action.payload.projectId);
+            project!.posterUrl = action.payload.posterUrl;
         },
 
         [deleteAudio.fulfilled.type]: (state: ProjectState, action: PayloadAction<DeletedAudio>) => {

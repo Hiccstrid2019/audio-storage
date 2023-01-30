@@ -15,6 +15,18 @@ export const fetchProjects = createAsyncThunk(
     }
 )
 
+export const fetchProject = createAsyncThunk(
+    'project/fetchProject',
+    async (id: string, thunkAPI) => {
+        try {
+            const response = await ProjectService.getProjectById(id);
+            return response.data;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+    }
+)
+
 interface CreateProjectModel {
     title: string;
     category: string;
@@ -57,6 +69,24 @@ export const updateProject = createAsyncThunk(
         try {
             const {id, title, category} = model;
             const response = await ProjectService.updateProject(id, title, category);
+            return response.data;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+    }
+)
+
+interface AddPosterModel {
+    projectId: string;
+    fileImg: File;
+}
+
+export const addPoster = createAsyncThunk(
+    'project/addPoster',
+    async (model: AddPosterModel, thunkAPI) => {
+        try {
+            const {projectId, fileImg} = model;
+            const response = await ProjectService.uploadPoster(projectId, fileImg);
             return response.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
