@@ -5,16 +5,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["MusicProgress/MusicProgress.csproj", "MusicProgress/"]
-RUN dotnet restore "MusicProgress/MusicProgress.csproj"
+COPY ["AudioStorage/AudioStorage.csproj", "AudioStorage/"]
+RUN dotnet restore "AudioStorage/AudioStorage.csproj"
 COPY . .
-WORKDIR "/src/MusicProgress"
-RUN dotnet build "MusicProgress.csproj" -c Release -o /app/build
+WORKDIR "/src/AudioStorage"
+RUN dotnet build "AudioStorage.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "MusicProgress.csproj" -c Release -o /app/publish
+RUN dotnet publish "AudioStorage.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MusicProgress.dll"]
+ENTRYPOINT ["dotnet", "AudioStorage.dll"]
