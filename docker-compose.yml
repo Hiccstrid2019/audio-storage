@@ -45,6 +45,9 @@ services:
   # Nginx proxy
   nginx-proxy:
     image: react-client
+    volumes:
+      - /etc/letsencrypt/live/audio-storage.ru/fullchain.pem:/etc/nginx/fullchain.pem
+      - /etc/letsencrypt/live/audio-storage.ru/privkey.pem:/etc/nginx/privkey.pem
     build: 
       context: ../audio-storage-client/
       args:
