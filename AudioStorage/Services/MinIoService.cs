@@ -73,7 +73,11 @@ public class MinIoService : IFileAppService
                 .WithObject(name)
                 .WithExpiry(60 * 60 * 24);
             var url = await _client.PresignedGetObjectAsync(getObjectArgs);
-            return url;
+            var builder = new UriBuilder(url);
+            builder.Scheme = _config.Scheme;
+            builder.Host = _config.ServerHost;
+            builder.Port = _config.ServerPort;
+            return builder.Uri.ToString();
         }
         catch (Minio.Exceptions.ObjectNotFoundException e)
         {

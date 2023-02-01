@@ -2,7 +2,7 @@ version: '3'
 
 services:
   # Api service
-  api.musicprogress:
+  api.audiostorage:
     image: music-backend
     build:
       context: .
@@ -25,6 +25,9 @@ services:
       MinIOSettings__SecretKey: SuoviT!bZSs@D8RwkrfBDersy7@DJ$
       MinIOSettings__BucketName: audio
       MinIOSettings__ContentType: 'audio/ogg; codecs=opus;'
+      MinIOSettings__Scheme: https,
+      MinIOSettings__ServerHost: audio-storage.ru
+      MinIOSettings__ServerPort: 80
     depends_on:
       - mysql-server
       - minio-storage
@@ -55,7 +58,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - api.musicprogress
+      - api.audiostorage
   
   minio-storage:
     image: minio/minio
