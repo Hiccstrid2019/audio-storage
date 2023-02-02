@@ -25,9 +25,9 @@ services:
       MinIOSettings__SecretKey: SuoviT!bZSs@D8RwkrfBDersy7@DJ$
       MinIOSettings__BucketName: audio
       MinIOSettings__ContentType: 'audio/ogg; codecs=opus;'
-      MinIOSettings__Scheme: https,
-      MinIOSettings__ServerHost: audio-storage.ru
-      MinIOSettings__ServerPort: 80
+      MinIOSettings__Scheme: https
+      MinIOSettings__ServerHost: storage.audio-storage.ru
+      MinIOSettings__ServerPort: -1
     depends_on:
       - mysql-server
       - minio-storage
@@ -51,10 +51,11 @@ services:
     volumes:
       - /etc/letsencrypt/live/audio-storage.ru/fullchain.pem:/etc/nginx/fullchain.pem
       - /etc/letsencrypt/live/audio-storage.ru/privkey.pem:/etc/nginx/privkey.pem
+      - /root/audio-storage-client/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     build: 
       context: ../audio-storage-client/
       args:
-        REACT_APP_SERVER_API: https://audio-storage.ru
+        REACT_APP_SERVER_API: https://api.audio-storage.ru
     ports:
       - "80:80"
     depends_on:
