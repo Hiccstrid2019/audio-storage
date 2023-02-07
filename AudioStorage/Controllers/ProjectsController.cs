@@ -89,10 +89,22 @@ namespace AudioStorage.Controllers
                 await model.ImgFile.CopyToAsync(memoryStream);
                 await _projectService.AddPosterAsync(model.ProjectId, memoryStream);
                 var url = await _projectService.GetUrlPosterAsync(model.ProjectId);
-                return Ok(new {ProjectId = model.ProjectId, PosterUrl = url});
+                return Ok(new {ProjectId = model.ProjectId, PosterUrl = url, PosterPosition = 50});
             }
 
             return NotFound();
-        } 
+        }
+
+        [HttpPut("poster/{id}")]
+        public async Task<ActionResult> UpdatePosterPosition(string id, PosterModel model)
+        {
+            var updatedProject = new Project()
+            {
+                ProjectId = Guid.Parse(id),
+                PosterPosition = model.PosterPosition
+            };
+            var project = await _projectService.UpdatePosterPosition(updatedProject);
+            return Ok(new {Id = project.ProjectId, PosterPosition = project.PosterPosition});
+        }
     }
 }

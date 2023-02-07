@@ -49,6 +49,7 @@ public class ProjectService : IProjectService
                 Category = project.Category,
                 TimeCreated = project.TimeCreated,
                 TimeModified = project.TimeModified,
+                PosterPosition = project.PosterPosition,
                 Audios = _context.Audios.Where(audio => audio.ProjectId == project.ProjectId)
                     .Select(audio => new AudioResult() {Id = audio.AudioId, Url = ""})
                     .ToList()
@@ -80,13 +81,14 @@ public class ProjectService : IProjectService
                 Category = project.Category,
                 TimeCreated = project.TimeCreated,
                 TimeModified = project.TimeModified,
+                PosterPosition = project.PosterPosition,
                 Audios = _context.Audios.Where(audio => audio.ProjectId == project.ProjectId)
                     .Select(audio => new AudioResult() {Id = audio.AudioId, Url = ""})
                     .ToList()
             })
             .FirstOrDefaultAsync();
         var posterUrl = await GetUrlPosterAsync(project.Id.ToString());
-        if (project != null)
+        if (posterUrl != null)
         {
             project.PosterUrl = posterUrl;
         }
@@ -107,12 +109,17 @@ public class ProjectService : IProjectService
             project.TimeModified = updatedProject.TimeModified;
             await _context.SaveChangesAsync();
         }
-        project = await _context.Projects.FirstOrDefaultAsync(l => l.ProjectId == updatedProject.ProjectId);
         return updatedProject;
     }
 
     public async Task AddPosterAsync(string projectId, Stream stream)
     {
+        var project = await _context.Projects.FirstOrDefaultAsync(l => l.ProjectId == Guid.Parse(projectId));
+        if (project != null)
+        {
+            project.PosterPosition = 50;
+            await _context.SaveChangesAsync();
+        }
         await _fileAppService.UploadObjectAsync(projectId, stream);
     }
 
@@ -120,5 +127,16 @@ public class ProjectService : IProjectService
     {
         var url = await _fileAppService.GetUrlObjectAsync(projectId);
         return url;
+    }
+
+    public async Task<Project> UpdatePosterPosition(Project updatedProject)
+    {
+        var project = await _context.Projects.FirstOrDefaultAsync(l => l.ProjectId == updatedProject.ProjectId);
+        if (project != null)
+        {
+            project.PosterPosition = updatedProject.PosterPosition;
+            await _context.SaveChangesAsync();
+        }
+        return updatedProject;
     }
 }

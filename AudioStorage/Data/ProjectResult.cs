@@ -11,5 +11,6 @@ public class ProjectResult
     public DateTime TimeCreated { get; set; }
     public DateTime TimeModified { get; set; }
     public string PosterUrl { get; set; }
+    public double? PosterPosition { get; set; }
     public List<AudioResult> Audios { get; set; }
 }

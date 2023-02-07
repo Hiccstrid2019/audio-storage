@@ -15,4 +15,5 @@ public interface IProjectService
     Task<Project> UpdateProjectAsync(Project project);
     Task AddPosterAsync(string projectId, Stream stream);
     Task<string?> GetUrlPosterAsync(string projectId);
+    Task<Project> UpdatePosterPosition(Project project);
 }

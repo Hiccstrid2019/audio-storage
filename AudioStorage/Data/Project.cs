@@ -12,6 +12,7 @@ public class Project
     public string Category { get; set; }
     public DateTime TimeCreated { get; set; }
     public DateTime TimeModified { get; set; }
+    public double? PosterPosition { get; set; }
     public int UserId { get; set; }
     public User User { get; set; }
 }
