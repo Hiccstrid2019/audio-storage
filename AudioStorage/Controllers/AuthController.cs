@@ -28,7 +28,7 @@ namespace AudioStorage.Controllers
         {
             var emailUniq = _userService.IsEmailUniq(model.Email);
             if (!emailUniq)
-                return BadRequest(new {email = "email already exists"});
+                return BadRequest(new {message = "user with this email already exists"});
             var hashedPassword = _authService.HashPassword(model.Password);
 
             var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
@@ -67,11 +67,11 @@ namespace AudioStorage.Controllers
         {
             var user = _userService.GetByEmail(model.Email);
             if (user == null)
-                return NotFound(new { email = "no user with this email"});
+                return NotFound(new { message = "there is no user with this email"});
             var validPassword = _authService.VerifyPassword(model.Password, user.HashedPassword);
             if (!validPassword)
             {
-                return BadRequest(new { password = "invalid password"});
+                return BadRequest(new { message = "invalid password"});
             }
 
             var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
