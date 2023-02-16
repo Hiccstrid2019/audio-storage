@@ -41,6 +41,15 @@ namespace AudioStorage.Controllers
             return project;
         }
         
+        [AllowAnonymous]
+        [HttpGet("shared/{id}")]
+        public async Task<ActionResult<SharedProjectResult>> GetSharedProject(string id)
+        {
+            var project = await _projectService.GetSharedProjectAsync(Guid.Parse(id));
+            if (project != null)
+                return project;
+            return BadRequest("This project is not shared");
+        }
         
         [HttpPost]
         public async Task<ActionResult> Project(ProjectModel model)
@@ -105,6 +114,13 @@ namespace AudioStorage.Controllers
             };
             var project = await _projectService.UpdatePosterPosition(updatedProject);
             return Ok(new {Id = project.ProjectId, PosterPosition = project.PosterPosition});
+        }
+
+        [HttpPut("shared/{id}")]
+        public async Task<ActionResult> UpdateProjectSharedStatus(string id, SharedModel model)
+        {
+            var project = await _projectService.SetSharedProject(Guid.Parse(id), model.IsShared);
+            return Ok(new {Id = project.ProjectId, IsShared = project.IsShared});
         }
     }
 }
