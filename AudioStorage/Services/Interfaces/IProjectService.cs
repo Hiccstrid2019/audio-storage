@@ -16,4 +16,6 @@ public interface IProjectService
     Task AddPosterAsync(string projectId, Stream stream);
     Task<string?> GetUrlPosterAsync(string projectId);
     Task<Project> UpdatePosterPosition(Project project);
+    Task<Project> SetSharedProject(Guid projectId, bool value);
+    Task<SharedProjectResult?> GetSharedProjectAsync(Guid projectId);
 }

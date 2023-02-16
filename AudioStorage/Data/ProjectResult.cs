@@ -12,5 +12,6 @@ public class ProjectResult
     public DateTime TimeModified { get; set; }
     public string PosterUrl { get; set; }
     public double? PosterPosition { get; set; }
+    public bool? IsShared { get; set; }
     public List<AudioResult> Audios { get; set; }
 }

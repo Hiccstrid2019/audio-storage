@@ -50,6 +50,7 @@ public class ProjectService : IProjectService
                 TimeCreated = project.TimeCreated,
                 TimeModified = project.TimeModified,
                 PosterPosition = project.PosterPosition,
+                IsShared = project.IsShared,
                 Audios = _context.Audios.Where(audio => audio.ProjectId == project.ProjectId)
                     .Select(audio => new AudioResult() {Id = audio.AudioId, Url = ""})
                     .ToList()
@@ -82,6 +83,7 @@ public class ProjectService : IProjectService
                 TimeCreated = project.TimeCreated,
                 TimeModified = project.TimeModified,
                 PosterPosition = project.PosterPosition,
+                IsShared = project.IsShared,
                 Audios = _context.Audios.Where(audio => audio.ProjectId == project.ProjectId)
                     .Select(audio => new AudioResult() {Id = audio.AudioId, Url = ""})
                     .ToList()
@@ -138,5 +140,52 @@ public class ProjectService : IProjectService
             await _context.SaveChangesAsync();
         }
         return updatedProject;
+    }
+
+    public async Task<Project> SetSharedProject(Guid projectId, bool value)
+    {
+        var project = await _context.Projects.FirstOrDefaultAsync(l => l.ProjectId == projectId);
+        if (project != null)
+        {
+            project.IsShared = value;
+            await _context.SaveChangesAsync();
+        }
+        return project;
+    }
+
+    public async Task<SharedProjectResult?> GetSharedProjectAsync(Guid projectId)
+    {
+        var sharedProject = await _context.Projects
+            .Where(project => project.ProjectId == projectId && project.IsShared == true)
+            .Select(project => new SharedProjectResult()
+            {
+                Id = project.ProjectId,
+                Author = _context.Users.FirstOrDefault(user => user.UserId == project.UserId).UserName,
+                Title = project.Title,
+                Category = project.Category,
+                TimeCreated = project.TimeCreated,
+                TimeModified = project.TimeModified,
+                PosterPosition = project.PosterPosition,
+                Audios = _context.Audios.Where(audio => audio.ProjectId == project.ProjectId)
+                    .Select(audio => new AudioResult() {Id = audio.AudioId, Url = ""})
+                    .ToList()
+            })
+            .FirstOrDefaultAsync();
+        if (sharedProject != null)
+        {
+            var posterUrl = await GetUrlPosterAsync(sharedProject.Id.ToString());
+            if (posterUrl != null)
+            {
+                sharedProject.PosterUrl = posterUrl;
+            }
+            foreach (var audio in sharedProject.Audios)
+            {
+                audio.Url = await _audioService.GetUrlAudioAsync(audio.Id.ToString());
+            }
+
+            return sharedProject;
+        }
+
+        return null;
     }
 }
