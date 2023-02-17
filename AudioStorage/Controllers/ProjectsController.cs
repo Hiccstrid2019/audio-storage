@@ -62,7 +62,8 @@ namespace AudioStorage.Controllers
                 Title = model.Title,
                 UserId = Convert.ToInt32(userId),
                 TimeCreated = DateTime.Now,
-                TimeModified = DateTime.Now
+                TimeModified = DateTime.Now,
+                IsShared = false
             };
             var projectId = await _projectService.CreateProjectAsync(newProject);
             return Ok(new { Id = projectId, Title = newProject.Title, Category = newProject.Category, TimeCreated = newProject.TimeCreated, TimeModified = newProject.TimeModified});
