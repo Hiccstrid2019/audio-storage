@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using AudioStorage.Data;
+using AudioStorage.DTO.Project;
 
 namespace AudioStorage.Services.Interfaces;
 
 public interface IProjectService
 {
-    Task<string> CreateProjectAsync(Project project);
+    Task<Project> CreateProjectAsync(CreateProjectDto createProjectDto);
     Task RemoveProjectAsync(Guid projectId);
     Task<List<ProjectResult>> GetProjectsAsync(int userId);
     Task<ProjectResult> GetProjectAsync(int userId, Guid projectId);
-    Task<Project> UpdateProjectAsync(Project project);
+    Task<Project> UpdateProjectAsync(UpdateProjectDto updateProjectDto);
     Task AddPosterAsync(string projectId, Stream stream);
     Task<string?> GetUrlPosterAsync(string projectId);
     Task<Project> UpdatePosterPosition(Project project);

@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AudioStorage.Data;
+using AudioStorage.DTO.Project;
 using AudioStorage.Models;
 using AudioStorage.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -48,7 +49,7 @@ namespace AudioStorage.Controllers
             var project = await _projectService.GetSharedProjectAsync(Guid.Parse(id));
             if (project != null)
                 return project;
-            return BadRequest("This project is not shared");
+            return NotFound("This project is not shared");
         }
         
         [HttpPost]
@@ -56,17 +57,14 @@ namespace AudioStorage.Controllers
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
-            var newProject = new Project()
+            var newProject = new CreateProjectDto()
             {
-                Category = model.Category,
                 Title = model.Title,
-                UserId = Convert.ToInt32(userId),
-                TimeCreated = DateTime.Now,
-                TimeModified = DateTime.Now,
-                IsShared = false
+                Category = model.Category,
+                UserId = Convert.ToInt32(userId)
             };
-            var projectId = await _projectService.CreateProjectAsync(newProject);
-            return Ok(new { Id = projectId, Title = newProject.Title, Category = newProject.Category, TimeCreated = newProject.TimeCreated, TimeModified = newProject.TimeModified});
+            var project = await _projectService.CreateProjectAsync(newProject);
+            return Ok(new { Id = project.ProjectId, Title = project.Title, Category = project.Category, TimeCreated = project.TimeCreated, TimeModified = project.TimeModified});
         }
         
         [HttpDelete("{id}")]
@@ -79,12 +77,11 @@ namespace AudioStorage.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProject(ProjectModel model)
         {
-            var updatedProject = new Project()
+            var updatedProject = new UpdateProjectDto()
             {
                 ProjectId = Guid.Parse(model.ProjectId),
                 Category = model.Category,
-                Title = model.Title,
-                TimeModified = DateTime.Now
+                Title = model.Title
             };
             var project = await _projectService.UpdateProjectAsync(updatedProject);
             return Ok(new {Id = project.ProjectId, Title = project.Title, Category = project.Category, TimeModified = project.TimeModified});

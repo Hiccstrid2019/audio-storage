@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AudioStorage.Data;
+using AudioStorage.DTO.Project;
 using AudioStorage.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,11 +22,20 @@ public class ProjectService : IProjectService
         _audioService = audioService;
         _fileAppService = fileAppService;
     }
-    public async Task<string> CreateProjectAsync(Project project)
+    public async Task<Project> CreateProjectAsync(CreateProjectDto createProjectDto)
     {
+        var project = new Project()
+        {
+            Title = createProjectDto.Title,
+            Category = createProjectDto.Category,
+            UserId = createProjectDto.UserId,
+            TimeCreated = DateTime.Now,
+            TimeModified = DateTime.Now,
+            IsShared = false
+        };
         await _context.Projects.AddAsync(project);
         await _context.SaveChangesAsync();
-        return project.ProjectId.ToString();
+        return project;
     }
 
     public async Task RemoveProjectAsync(Guid projectId)
@@ -101,17 +111,17 @@ public class ProjectService : IProjectService
         return project;
     }
 
-    public async Task<Project> UpdateProjectAsync(Project updatedProject)
+    public async Task<Project> UpdateProjectAsync(UpdateProjectDto updateProjectDto)
     {
-        var project = await _context.Projects.FirstOrDefaultAsync(l => l.ProjectId == updatedProject.ProjectId);
+        var project = await _context.Projects.FirstOrDefaultAsync(l => l.ProjectId == updateProjectDto.ProjectId);
         if (project != null)
         {
-            project.Title = updatedProject.Title;
-            project.Category = updatedProject.Category;
-            project.TimeModified = updatedProject.TimeModified;
+            project.Title = updateProjectDto.Title;
+            project.Category = updateProjectDto.Category;
+            project.TimeModified = DateTime.Now;
             await _context.SaveChangesAsync();
         }
-        return updatedProject;
+        return project;
     }
 
     public async Task AddPosterAsync(string projectId, Stream stream)
