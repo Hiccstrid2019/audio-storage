@@ -3,7 +3,7 @@ version: '3'
 services:
   # Api service
   api.audiostorage:
-    image: music-backend
+    image: storage-backend
     build:
       context: .
       dockerfile: AudioStorage/Dockerfile
@@ -41,21 +41,22 @@ services:
       MYSQL_PASSWORD: '3gsWZeDs#%T*NfPkh4'
       MYSQL_ROOT_PASSWORD: Favekj3A8@yRkhQUo%
     volumes:
-      - ./initsql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql-data:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
   
-  # Nginx proxy
-  nginx-proxy:
+  # Reverse proxy and web server for react
+  reverse-proxy:
     image: react-client
-    volumes:
-      - /etc/letsencrypt/live/audio-storage.ru/fullchain.pem:/etc/nginx/fullchain.pem
-      - /etc/letsencrypt/live/audio-storage.ru/privkey.pem:/etc/nginx/privkey.pem
-      - /root/audio-storage-client/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     build: 
       context: ../audio-storage-client/
       args:
         REACT_APP_SERVER_API: https://api.audio-storage.ru
+    volumes:
+#      - /etc/letsencrypt/live/audio-storage.ru/fullchain.pem:/etc/nginx/fullchain.pem
+#      - /etc/letsencrypt/live/audio-storage.ru/privkey.pem:/etc/nginx/privkey.pem
+      - /root/audio-storage-client/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "80:80"
     depends_on:
@@ -63,6 +64,8 @@ services:
   
   minio-storage:
     image: minio/minio
+    volumes:
+      - /miniodata:/data
     command: server ~/data --address ":9000" --console-address ":9090"
     ports:
       - "9090:9090"

@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using AudioStorage.Data;
 using AudioStorage.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace AudioStorage.Services;
 
@@ -12,27 +14,27 @@ public class UserService : IUserService
     {
         _context = context;
     }
-    public int CreateUser(User user)
+    public async Task<int> CreateUserAsync(User user)
     {
-        _context.Add(user);
-        _context.SaveChanges();
+        await _context.AddAsync(user);
+        await _context.SaveChangesAsync();
         return user.UserId;
     }
 
-    public User GetById(int id)
+    public async Task<User> GetByIdAsync(int id)
     {
-        return _context.Users
-            .SingleOrDefault(u => u.UserId == id);
+        return await _context.Users
+            .SingleOrDefaultAsync(u => u.UserId == id);
     }
 
-    public User GetByEmail(string email)
+    public async Task<User> GetByEmailAsync(string email)
     {
-        return _context.Users.SingleOrDefault(u => u.Email == email);
+        return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
     }
 
-    public bool IsEmailUniq(string email)
+    public async Task<bool> IsEmailUniqAsync(string email)
     {
-        var user = _context.Users.SingleOrDefault(u => u.Email == email);
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         return user == null;
     }
 }

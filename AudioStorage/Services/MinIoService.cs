@@ -50,7 +50,7 @@ public class MinIoService : IFileAppService
         var getObjectArgs = new GetObjectArgs()
             .WithBucket(_config.BucketName)
             .WithObject(name)
-            .WithCallbackStream((stream) =>
+            .WithCallbackStream(stream =>
             {
                 stream.CopyToAsync(memoryStream);
             });

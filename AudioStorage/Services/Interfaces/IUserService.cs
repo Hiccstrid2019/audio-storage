@@ -1,12 +1,13 @@
-﻿using AudioStorage.Data;
+﻿using System.Threading.Tasks;
+using AudioStorage.Data;
 
 namespace AudioStorage.Services.Interfaces
 {
     public interface IUserService
     {
-        int CreateUser(User user);
-        User GetById(int id);
-        User GetByEmail(string email);
-        bool IsEmailUniq(string email);
+        Task<int> CreateUserAsync(User user);
+        Task<User> GetByIdAsync(int id);
+        Task<User> GetByEmailAsync(string email);
+        Task<bool> IsEmailUniqAsync(string email);
     }
 }

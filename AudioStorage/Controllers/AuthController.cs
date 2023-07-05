@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using AudioStorage.Data;
 using AudioStorage.Models;
 using AudioStorage.Services.Interfaces;
@@ -24,9 +25,9 @@ namespace AudioStorage.Controllers
         }
 
         [HttpPost("[action]")]
-        public ActionResult<LoginResult> Register(RegisterModel model)
+        public async Task<ActionResult<LoginResult>> Register(RegisterModel model)
         {
-            var emailUniq = _userService.IsEmailUniq(model.Email);
+            var emailUniq = await _userService.IsEmailUniqAsync(model.Email);
             if (!emailUniq)
                 return BadRequest(new {message = "user with this email already exists"});
             var hashedPassword = _authService.HashPassword(model.Password);
@@ -46,7 +47,7 @@ namespace AudioStorage.Controllers
                     SameSite = SameSiteMode.None,
                     Secure = true
                 });
-            var userId = _userService.CreateUser(user);
+            var userId = await _userService.CreateUserAsync(user);
             _tokenService.SetRefreshToken(userId, new RefreshToken()
             {
                 UserId = userId,
@@ -63,9 +64,9 @@ namespace AudioStorage.Controllers
         }
 
         [HttpPost("[action]")]
-        public ActionResult<LoginResult> Login(LoginModel model)
+        public async Task<ActionResult<LoginResult>> Login(LoginModel model)
         {
-            var user = _userService.GetByEmail(model.Email);
+            var user = await _userService.GetByEmailAsync(model.Email);
             if (user == null)
                 return NotFound(new { message = "there is no user with this email"});
             var validPassword = _authService.VerifyPassword(model.Password, user.HashedPassword);
@@ -99,7 +100,7 @@ namespace AudioStorage.Controllers
         }
 
         [HttpGet("refresh-token")]
-        public ActionResult<LoginResult> RefreshToken()
+        public async Task<ActionResult<LoginResult>> RefreshToken()
         {
             var refreshToken = HttpContext.Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(refreshToken))
@@ -112,7 +113,7 @@ namespace AudioStorage.Controllers
                 return Unauthorized("Token are expired");
             }
 
-            var user = _userService.GetById(tokenData.UserId);
+            var user = await _userService.GetByIdAsync(tokenData.UserId);
             var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
             HttpContext.Response.Cookies.Append("refreshToken", token,
                 new CookieOptions()

@@ -25,7 +25,7 @@ namespace AudioStorage.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult<List<ProjectResult>>> GetProjects()
+        public async Task<ActionResult<IList<ProjectResult>>> GetProjects()
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
